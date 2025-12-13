@@ -7,7 +7,7 @@ Base = declarative_base()
 # DATABASE_URL = "postgresql://user:password@localhost/db"
 # engine = create_engine(DATABASE_URL)
 
-engine = create_engine("sqlite:///sqlite.db")
+engine = create_engine("sqlite:///database/sqlite.db")
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
