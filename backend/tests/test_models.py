@@ -20,3 +20,18 @@ def test_insert_item(db_session):
     item = db_session.query(Item).filter_by(name="Farinha").first()
     assert item.name == farinha.name
 
+def test_insert_receita(db_session):
+
+    receita = Receita(
+        title="Bolo simples",
+        steps="Misture tudo e asse",
+        description="Bolo básico"
+    )
+
+    db_session.add(receita)
+    db_session.commit()
+
+    assert receita.id is not None
+
+    objeto = db_session.query(Receita).filter_by(title="Bolo simples").first()
+    assert objeto.title == receita.title
