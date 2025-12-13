@@ -16,7 +16,7 @@ class ReceitaItem(Base):
         primary_key=True
     )
 
-    quantidade = Column(Numeric, nullable=False)
+    amount = Column(Numeric, nullable=False)
 
     receita = relationship("Receita", back_populates="receita_itens")
     item = relationship("Item", back_populates="receita_itens")
