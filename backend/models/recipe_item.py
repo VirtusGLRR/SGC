@@ -2,12 +2,12 @@ from sqlalchemy import Column, Integer, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 from database.database import Base
 
-class ReceitaItem(Base):
-    __tablename__ = "Receita_Item"
+class RecipeItem(Base):
+    __tablename__ = "Recipe_Item"
 
-    receita_id = Column(
+    recipe_id = Column(
         Integer,
-        ForeignKey("Receita.id"),
+        ForeignKey("Recipe.id"),
         primary_key=True
     )
     item_id = Column(
@@ -18,5 +18,5 @@ class ReceitaItem(Base):
 
     amount = Column(Numeric, nullable=False)
 
-    receita = relationship("Receita", back_populates="receita_itens")
-    item = relationship("Item", back_populates="receita_itens")
+    recipe = relationship("Recipe", back_populates="recipe_itens")
+    item = relationship("Item", back_populates="recipe_itens")

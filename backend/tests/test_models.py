@@ -1,6 +1,6 @@
-from models.receita import Receita
+from models.recipe import Recipe
 from models.item import Item
-from models.receita_item import ReceitaItem
+from models.recipe_item import RecipeItem
 from tests.conftest import db_session 
 
 def test_insert_item(db_session):
@@ -20,23 +20,23 @@ def test_insert_item(db_session):
     item = db_session.query(Item).filter_by(name="Farinha").first()
     assert item.name == farinha.name
 
-def test_insert_receita(db_session):
+def test_insert_recipe(db_session):
 
-    receita = Receita(
+    recipe = Recipe(
         title="Bolo simples",
         steps="Misture tudo e asse",
         description="Bolo básico"
     )
 
-    db_session.add(receita)
+    db_session.add(recipe)
     db_session.commit()
 
-    assert receita.id is not None
+    assert recipe.id is not None
 
-    obj = db_session.query(Receita).filter_by(title="Bolo simples").first()
-    assert obj.title == receita.title
+    obj = db_session.query(Recipe).filter_by(title="Bolo simples").first()
+    assert obj.title == recipe.title
     
-def test_insert_receita_item(db_session):
+def test_insert_recipe_item(db_session):
 
     farinha = Item(
         name="Farinha",
@@ -45,7 +45,7 @@ def test_insert_receita_item(db_session):
         description="Farinha de trigo"
     )
 
-    receita = Receita(
+    recipe = Recipe(
         title="Bolo simples",
         steps="Misture tudo e asse",
         description="Bolo básico"
@@ -54,22 +54,22 @@ def test_insert_receita_item(db_session):
     db_session.add(farinha)
     db_session.commit()
 
-    receita.receita_itens.append(
-        ReceitaItem(item=farinha, amount=200)
+    recipe.recipe_itens.append(
+        RecipeItem(item=farinha, amount=200)
     )
 
-    db_session.add(receita)
+    db_session.add(recipe)
     db_session.commit()
 
-    assert receita.id is not None
+    assert recipe.id is not None
     assert farinha.id is not None
-    assert len(receita.receita_itens) == 1
+    assert len(recipe.recipe_itens) == 1
 
-    itens_name = [ri.item.name for ri in farinha.receita_itens]
+    itens_name = [ri.item.name for ri in farinha.recipe_itens]
     assert "Farinha" in itens_name
     
-    amount = {ri.item.name: ri.amount for ri in farinha.receita_itens}
+    amount = {ri.item.name: ri.amount for ri in farinha.recipe_itens}
     assert amount["Farinha"] == 200
 
-    obj = db_session.query(Receita).filter_by(title="Bolo simples").first()
-    assert obj.title == receita.title
+    obj = db_session.query(Recipe).filter_by(title="Bolo simples").first()
+    assert obj.title == recipe.title

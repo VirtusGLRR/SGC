@@ -16,7 +16,7 @@ class Item(Base):
     create_at = Column(Date, default=datetime.now(), nullable=False)
     update_at = Column(Date)
 
-    receita_itens = relationship(
-        "ReceitaItem",
+    recipe_itens = relationship(
+        "RecipeItem",
         back_populates="item"
     )
