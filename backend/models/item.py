@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, Numeric, Date
 from sqlalchemy.orm import relationship
-from app.database.database import Base
+from database.database import Base
 from datetime import datetime
 
 class Item(Base):
@@ -13,10 +13,10 @@ class Item(Base):
     description = Column(Text)
     price = Column(Numeric, default=0)
     expiration_date = Column(Date)
-    create_at = Column(Date, default=datetime.utcnow)
+    create_at = Column(Date, default=datetime.now(), nullable=False)
     update_at = Column(Date)
 
     receita_itens = relationship(
-        "Receita_Item",
+        "ReceitaItem",
         back_populates="item"
     )
