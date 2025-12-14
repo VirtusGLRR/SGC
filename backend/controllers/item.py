@@ -10,6 +10,9 @@ class ItemController:
     def create(request: ItemRequest, db: Session = Depends(get_db)):
         item = ItemRepository.save(db, Item(**request.model_dump()))
         return ItemResponse.model_validate(item)
+        # Note este retorno, tem a ver com a alteração feita no Schema (em
+        # relação à depreciação), ocorre outra alteração aqui também. poderia
+        # ser retornado item diretamente
 
     @staticmethod
     def find_all(db: Session = Depends(get_db)):
@@ -27,12 +30,8 @@ class ItemController:
 
     @staticmethod
     def find_by_name(name: str, db: Session = Depends(get_db)):
-        item = ItemRepository.find_by_name(db, name)
-        if not item:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Item não encontrado"
-            )
-        return ItemResponse.model_validate(item)
+        items = ItemRepository.find_by_name(db, name)
+        return [ItemResponse.model_validate(item) for item in items]
 
     @staticmethod
     def delete_by_id(id: int, db: Session = Depends(get_db)):

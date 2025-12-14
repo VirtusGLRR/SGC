@@ -21,8 +21,8 @@ class ItemRepository:
         return db.query(Item).filter(Item.id == id).first()
 
     @staticmethod
-    def find_by_name(db: Session, name: str) -> Item | None:
-        return db.query(Item).filter(Item.name == name).first()
+    def find_by_name(db: Session, name: str) -> list[type[Item]]:
+        return db.query(Item).filter(Item.name == name).all()
 
     @staticmethod
     def exists_by_id(db: Session, id: int) -> bool:
