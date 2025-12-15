@@ -3,7 +3,11 @@ from ..agents import sql_agent
 from ..state import AgentState
 
 def sql_node(state : AgentState):
-    response = sql_agent.invoke(state['user_input'])
+    response = sql_agent.invoke({
+        "messages": [
+            HumanMessage(content=state['user_input'])
+        ]}
+    )
     return {
-        'sql_response': response['output'][0]['text']
+        'sql_response': response['messages'][-1].content
     }

@@ -1,7 +1,6 @@
-from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import StateGraph, END
 from .state import AgentState
-from pathlib import Path
 from .nodes import (
     orchestrator_node,
     structurer_node,
@@ -10,12 +9,8 @@ from .nodes import (
     revisor_node,
     web_node
 )
-import sqlite3
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-db_path = BASE_DIR / "database" / "checkpoints.db"
-conn = sqlite3.connect(str(db_path), check_same_thread=False)
-memory = SqliteSaver(conn)
+memory = InMemorySaver()
 
 builder = StateGraph(AgentState)
 
@@ -54,13 +49,5 @@ builder.add_edge("web", END)
 builder.add_edge("trivial", END)
 
 graph = builder.compile(checkpointer=memory)
-
-assets_dir = BASE_DIR / "assets"
-
-image_path = assets_dir / "graph.png"
-image_data = graph.get_graph().draw_mermaid_png()
-
-with open(image_path, "wb") as f:
-    f.write(image_data)
 
 
