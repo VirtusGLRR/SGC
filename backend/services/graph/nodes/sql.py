@@ -1,5 +1,6 @@
 from langchain_core.messages import HumanMessage, AIMessage
 from ..agents import sql_agent
+from ..state import AgentState
 
 def sql_node(state : AgentState):
     response = sql_agent.invoke(state['user_input'])

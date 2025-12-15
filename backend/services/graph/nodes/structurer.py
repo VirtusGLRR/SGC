@@ -1,5 +1,6 @@
 from langchain_core.messages import HumanMessage, AIMessage
 from ..agents import structurer_agent
+from ..state import AgentState
 
 def structurer_node(state : AgentState):
     history = state['messages']

@@ -2,7 +2,7 @@ from ..tools.web import search_web_tool
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents.structured_output import ToolStrategy
 from langchain.agents import create_agent
-from utils import load_prompt
+from ..utils import load_prompt
 from pydantic import BaseModel
 from dotenv import load_dotenv
 

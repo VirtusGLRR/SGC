@@ -1,5 +1,6 @@
 from langchain_core.messages import HumanMessage, AIMessage
 from ..agents import web_agent
+from ..state import AgentState
 
 def web_node(state : AgentState):
     print("Query Web:", state['user_input'])

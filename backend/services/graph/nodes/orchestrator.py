@@ -1,7 +1,8 @@
 from langchain_core.messages import HumanMessage, AIMessage
 from ..agents import orchestrator_agent
+from ..state import AgentState
 
-def orquestration_node(state : AgentState):
+def orchestrator_node(state : AgentState):
     response = orchestrator_agent.invoke({
         "messages": [
             HumanMessage(content=state['user_input'])

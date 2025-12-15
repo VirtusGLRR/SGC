@@ -1,5 +1,6 @@
 from langchain_core.messages import HumanMessage, AIMessage
 from ..agents import trivial_agent
+from ..state import AgentState
 
 def trivial_node(state : AgentState):
     response = trivial_agent.invoke({

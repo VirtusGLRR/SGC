@@ -5,7 +5,7 @@ import operator
 
 class AgentState(TypedDict):
     user_input: Annotated[str, "A mensagem enviada pelo usuário."]
-    next_agent: Anootated[str, "O próximo agente a ser chamado"]
+    next_agent: Annotated[str, "O próximo agente a ser chamado"]
     orchestrator_explanation: Annotated[str, "Instruções do agente orquestrador sobre qual agente especializado foi chamado e o motivo"]
     sql_response: Annotated[str, "A resposta retornada pelo agente SQL"]
     final_answer: Annotated[str, "A resposta final compilada para o usuário."]
