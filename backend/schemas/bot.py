@@ -3,13 +3,14 @@ from typing import Optional
 from datatime import datetime
 
 class BotBase(BaseModel):
-    thread_id: str
+    Optional[str] = None
     user_message: str
     ai_message: Optional[str] = None
     create_at: Optional[datetime] = datetime.now()
 
-class BotRequest(BotBase):
-    ...
+class BotRequest():
+    thread_id: Optional[str] = None
+    user_message: str
 
 class BotResponse(BotBase):
     id: int
