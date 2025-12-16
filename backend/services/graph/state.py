@@ -6,7 +6,7 @@ import operator
 class AgentState(TypedDict):
     user_input: str
     next_agent: str
-    orchestrator_explaination: str
+    orchestrator_explanation: str
     sql_response: str
     final_answer: str
     messages: Annotated[list[AnyMessage], operator.add]
