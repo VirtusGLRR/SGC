@@ -4,17 +4,11 @@ from models import Bot
 
 class BotRepository:
     @staticmethod
-    def save(db: Session, thread_id: str, user_message: str, ai_message: str, create_at: str) -> Message:
-        new_message = Bot(
-            thread_id=thread_id,
-            user_message=user_message,
-            ai_message=ai_message,
-            create_at=create_at
-        )
-        db.add(new_message)
+    def save(db: Session, bot: Bot) -> Message:
+        db.add(bot)
         db.commit()
-        db.refresh(new_message)
-        return new_message
+        db.refresh(bot)
+        return bot
 
     @staticmethod
     def get_messages(db: Session):
