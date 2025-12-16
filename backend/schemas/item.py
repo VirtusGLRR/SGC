@@ -18,7 +18,5 @@ class ItemRequest(ItemBase):
 class ItemResponse(ItemBase):
     id: int
 
-    # Nesta linha foi necessário utilizar esta abordagem, pois a
-    # utilizada no artigo estava em depreciação
     model_config = ConfigDict(from_attributes=True)
 
