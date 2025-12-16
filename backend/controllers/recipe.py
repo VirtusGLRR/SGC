@@ -10,9 +10,7 @@ class RecipeController:
     def create(request: RecipeRequest, db: Session = Depends(get_db)):
         recipe = RecipeRepository.save(db, Recipe(**request.model_dump()))
         return RecipeResponse.model_validate(recipe)
-        # Note este retorno, tem a ver com a alteração feita no Schema (em
-        # relação à depreciação), ocorre outra alteração aqui também. poderia
-        # ser retornado item diretamente
+        
 
     @staticmethod
     def find_all(db: Session = Depends(get_db)):
