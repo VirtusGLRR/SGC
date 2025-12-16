@@ -1,4 +1,4 @@
-from models import Item, Recipe, RecipeItem, Message
+from models import Item, Recipe, RecipeItem, Bot
 from database.database import engine, Base
 from fastapi import FastAPI
 
