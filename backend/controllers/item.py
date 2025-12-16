@@ -10,9 +10,6 @@ class ItemController:
     def create(request: ItemRequest, db: Session = Depends(get_db)):
         item = ItemRepository.save(db, Item(**request.model_dump()))
         return ItemResponse.model_validate(item)
-        # Note este retorno, tem a ver com a alteração feita no Schema (em
-        # relação à depreciação), ocorre outra alteração aqui também. poderia
-        # ser retornado item diretamente
 
     @staticmethod
     def find_all(db: Session = Depends(get_db)):
