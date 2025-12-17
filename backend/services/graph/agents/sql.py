@@ -16,6 +16,7 @@ llm = ChatGoogleGenerativeAI(
 db = SQLDatabase.from_uri("sqlite:///database/sqlite.db")
 
 sql_agent = create_sql_agent(
-    llm, db=db, verbose= True, agent_type="tool-calling",
+    llm, db=db, verbose= False, agent_type="tool-calling",
     handle_parsing_errors=True, prefix_prompt=load_prompt("sql"), extra_tools=[add_recipe_tool]
 )
+
