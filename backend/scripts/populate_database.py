@@ -15,22 +15,11 @@ from models.recipe_item import RecipeItem
 def populate_database():
     """Popula o banco de dados com dados de teste"""
 
-    # Cria as tabelas se não existirem
     Base.metadata.create_all(bind=engine)
-
-    # Cria uma sessão
     db = SessionLocal()
 
     try:
-        # Limpa dados existentes (opcional - descomente se quiser limpar antes)
-        # db.query(RecipeItem).delete()
-        # db.query(Recipe).delete()
-        # db.query(Item).delete()
-        # db.commit()
-
         print("Criando itens...")
-
-        # Criar itens (ingredientes)
         items = [
             Item(
                 name="banana nanica",
@@ -169,20 +158,12 @@ def populate_database():
                 expiration_date=datetime.now().date() + timedelta(days=7)
             ),
         ]
-
-        # Adiciona itens ao banco
         db.add_all(items)
         db.commit()
-
-        # Recarrega os itens para obter os IDs
         for item in items:
             db.refresh(item)
-
         print(f"{len(items)} itens criados!")
-
         print("\nCriando receitas...")
-
-        # Criar receitas
         recipe1 = Recipe(
             title="torta banoffee",
             description="torta clássica inglesa com banana e doce de leite",
@@ -220,11 +201,9 @@ def populate_database():
 7. sirva em forminhas de papel."""
         )
 
-        # Adiciona receitas ao banco
         db.add_all([recipe1, recipe2, recipe3])
         db.commit()
 
-        # Recarrega as receitas para obter os IDs
         db.refresh(recipe1)
         db.refresh(recipe2)
         db.refresh(recipe3)
@@ -233,41 +212,36 @@ def populate_database():
 
         print("\nVinculando ingredientes às receitas...")
 
-        # Criar vínculos entre receitas e itens (RecipeItem)
 
-        # Receita 1: Torta Banoffee
         recipe1_items = [
-            RecipeItem(recipe_id=recipe1.id, item_id=items[0].id, amount=4),  # banana
-            RecipeItem(recipe_id=recipe1.id, item_id=items[1].id, amount=400),  # doce de leite
-            RecipeItem(recipe_id=recipe1.id, item_id=items[2].id, amount=200),  # biscoito maisena
-            RecipeItem(recipe_id=recipe1.id, item_id=items[3].id, amount=100),  # manteiga
-            RecipeItem(recipe_id=recipe1.id, item_id=items[4].id, amount=500),  # creme de leite
-            RecipeItem(recipe_id=recipe1.id, item_id=items[5].id, amount=80),  # açúcar
-            RecipeItem(recipe_id=recipe1.id, item_id=items[11].id, amount=30),  # chocolate em pó
+            RecipeItem(recipe_id=recipe1.id, item_id=items[0].id, amount=4),
+            RecipeItem(recipe_id=recipe1.id, item_id=items[1].id, amount=400),
+            RecipeItem(recipe_id=recipe1.id, item_id=items[2].id, amount=200),
+            RecipeItem(recipe_id=recipe1.id, item_id=items[3].id, amount=100),
+            RecipeItem(recipe_id=recipe1.id, item_id=items[4].id, amount=500),
+            RecipeItem(recipe_id=recipe1.id, item_id=items[5].id, amount=80),
+            RecipeItem(recipe_id=recipe1.id, item_id=items[11].id, amount=30),
         ]
 
-        # Receita 2: Pavê de Banana
         recipe2_items = [
-            RecipeItem(recipe_id=recipe2.id, item_id=items[0].id, amount=4),  # banana
-            RecipeItem(recipe_id=recipe2.id, item_id=items[1].id, amount=400),  # doce de leite
-            RecipeItem(recipe_id=recipe2.id, item_id=items[6].id, amount=395),  # leite condensado
-            RecipeItem(recipe_id=recipe2.id, item_id=items[7].id, amount=480),  # leite
-            RecipeItem(recipe_id=recipe2.id, item_id=items[8].id, amount=30),  # amido de milho
-            RecipeItem(recipe_id=recipe2.id, item_id=items[9].id, amount=2),  # gemas
-            RecipeItem(recipe_id=recipe2.id, item_id=items[10].id, amount=200),  # biscoito champanhe
-            RecipeItem(recipe_id=recipe2.id, item_id=items[12].id, amount=5),  # canela
+            RecipeItem(recipe_id=recipe2.id, item_id=items[0].id, amount=4),
+            RecipeItem(recipe_id=recipe2.id, item_id=items[1].id, amount=400),
+            RecipeItem(recipe_id=recipe2.id, item_id=items[6].id, amount=395),
+            RecipeItem(recipe_id=recipe2.id, item_id=items[7].id, amount=480),
+            RecipeItem(recipe_id=recipe2.id, item_id=items[8].id, amount=30),
+            RecipeItem(recipe_id=recipe2.id, item_id=items[9].id, amount=2),
+            RecipeItem(recipe_id=recipe2.id, item_id=items[10].id, amount=200),
+            RecipeItem(recipe_id=recipe2.id, item_id=items[12].id, amount=5),
         ]
 
-        # Receita 3: Brigadeiro de Banana
         recipe3_items = [
-            RecipeItem(recipe_id=recipe3.id, item_id=items[0].id, amount=3),  # banana
-            RecipeItem(recipe_id=recipe3.id, item_id=items[1].id, amount=200),  # doce de leite
-            RecipeItem(recipe_id=recipe3.id, item_id=items[6].id, amount=395),  # leite condensado
-            RecipeItem(recipe_id=recipe3.id, item_id=items[3].id, amount=20),  # manteiga
-            RecipeItem(recipe_id=recipe3.id, item_id=items[11].id, amount=100),  # chocolate em pó
+            RecipeItem(recipe_id=recipe3.id, item_id=items[0].id, amount=3),
+            RecipeItem(recipe_id=recipe3.id, item_id=items[1].id, amount=200),
+            RecipeItem(recipe_id=recipe3.id, item_id=items[6].id, amount=395),
+            RecipeItem(recipe_id=recipe3.id, item_id=items[3].id, amount=20),
+            RecipeItem(recipe_id=recipe3.id, item_id=items[11].id, amount=100),
         ]
 
-        # Adiciona os vínculos ao banco
         all_recipe_items = recipe1_items + recipe2_items + recipe3_items
         db.add_all(all_recipe_items)
         db.commit()
