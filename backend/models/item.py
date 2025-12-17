@@ -18,5 +18,6 @@ class Item(Base):
 
     recipe_itens = relationship(
         "RecipeItem",
-        back_populates="item"
+        back_populates="item",
+        cascade="all, delete-orphan"
     )
