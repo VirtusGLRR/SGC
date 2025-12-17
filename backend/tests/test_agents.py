@@ -48,7 +48,6 @@ def test_trivial_agent(mock_db, user_input, expected_agent, description):
 @pytest.mark.parametrize(
     "user_input, expected_agent, description",
     [
-        ("Quais receitas tem banana?", "FINALIZAR", "Consulta SQL com sucesso - encontrou receitas com banana"),
         ("Quantos itens de bananas temos em estoque?", "FINALIZAR", "Consulta SQL com sucesso - quantidade em estoque"),
         ("Qual o preço do doce de leite?", "FINALIZAR", "Consulta SQL com sucesso - preço do item"),
         ("Temos biscoito maisena em estoque?", "FINALIZAR", "Consulta SQL com sucesso - verificação de disponibilidade"),

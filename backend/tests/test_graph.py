@@ -26,14 +26,14 @@ def main():
         if not msg.strip():
             continue
 
-        # for s in graph.stream({
-        #     'user_input': msg,
-        # }, thread):
-        #     print(s)
+        for s in graph.stream({
+            'user_input': msg,
+        }, thread):
+            print(s)
 
-        response = graph.invoke({'user_input':msg}, {"configurable": {"thread_id": 1}})
-
-        print(response["next_agent"])
+        # response = graph.invoke({'user_input':msg}, {"configurable": {"thread_id": 1}})
+        #
+        # print(response)
 
 if __name__ == "__main__":
     main()
