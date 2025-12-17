@@ -1,3 +1,9 @@
 from .bot import BotController
+from .recipe import RecipeController
+from .item import ItemController
 
-__all__ = ["BotController"]
+__all__ = [
+  'RecipeController', 
+  'ItemController', 
+  'BotController'
+]

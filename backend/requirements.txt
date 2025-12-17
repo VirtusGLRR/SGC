@@ -9,3 +9,4 @@ langchain-community==0.4.1
 langchain-google-genai==4.0.0
 langgraph-checkpoint-sqlite==3.0.1
 langchain-tavily==0.2.14
+pydantic==2.12.5
