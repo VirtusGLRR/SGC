@@ -7,7 +7,6 @@
 ![LangGraph](https://img.shields.io/badge/LangGraph-1.0.5-FF6F00.svg)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 **Sistema inteligente de gerenciamento de items, receitas e ingredientes**
 
