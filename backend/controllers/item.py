@@ -1,4 +1,5 @@
 from fastapi import Depends, HTTPException, status, Response
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from database.database import get_db
 from models import Item
@@ -39,7 +40,10 @@ class ItemController:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Item não encontrado"
             )
         ItemRepository.delete_by_id(db, id)
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
+        return JSONResponse(
+            status_code=status.HTTP_204_OK, 
+            content={"message": "Item removido com sucesso", "id": id}
+        )
 
     @staticmethod
     def update(id: int, request: ItemRequest, db: Session = Depends(get_db)):

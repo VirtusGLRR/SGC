@@ -1,4 +1,5 @@
 from fastapi import Depends, HTTPException, status, Response
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from database.database import get_db
 from models import Recipe
@@ -38,13 +39,14 @@ class RecipeController:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Receita não encontrada"
             )
         RecipeRepository.delete_by_id(db, id)
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
+        return JSONResponse(
+            status_code=status.HTTP_204_OK, 
+            content={"message": "Receita removido com sucesso", "id": id}
+        )
 
     @staticmethod
     def update(id: int, request: RecipeRequest, db: Session = Depends(get_db)):
         if not RecipeRepository.exists_by_id(db, id):
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Receita não encontrada"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Receita não encontrada")
         recipe = RecipeRepository.save(db, Recipe(id=id, **request.model_dump()))
         return RecipeResponse.model_validate(recipe)
