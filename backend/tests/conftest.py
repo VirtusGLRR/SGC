@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, backend_dir)
 
-from models import Item, Recipe, RecipeItem
+from models import Item, Recipe, RecipeItem, Transaction
 
 from database.database import Base
 
