@@ -42,7 +42,7 @@ class TransactionRepository:
             db.commit()
 
     @staticmethod
-    def get_transaction_summary_by_period(
+    def find_transaction_summary_by_period(
             db: Session,
             start_date: datetime = None,
             end_date: datetime = None
@@ -99,7 +99,7 @@ class TransactionRepository:
         }
 
     @staticmethod
-    def get_most_transacted_items(
+    def find_most_transacted_items(
             db: Session,
             order_type: str = None,
             limit: int = 10
@@ -136,7 +136,7 @@ class TransactionRepository:
         ]
 
     @staticmethod
-    def get_daily_transactions(
+    def find_daily_transactions(
             db: Session,
             days: int = 30
     ) -> list[dict]:
@@ -168,7 +168,7 @@ class TransactionRepository:
         ]
 
     @staticmethod
-    def get_average_transaction_value_by_item(db: Session) -> list[dict]:
+    def find_average_transaction_value_by_item(db: Session) -> list[dict]:
         """Retorna valor médio de transação por item"""
         results = db.query(
             Item.id,
@@ -198,7 +198,7 @@ class TransactionRepository:
         ]
 
     @staticmethod
-    def get_consumption_rate_by_item(
+    def find_consumption_rate_by_item(
             db: Session,
             days: int = 30
     ) -> list[dict]:

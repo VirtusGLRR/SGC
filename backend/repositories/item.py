@@ -47,12 +47,12 @@ class ItemRepository:
             db.commit()
 
     @staticmethod
-    def get_low_stock_items(db: Session, threshold: Decimal = Decimal('10')) -> list[Item]:
+    def find_low_stock_items(db: Session, threshold: Decimal = Decimal('10')) -> list[Item]:
         """Retorna itens com estoque abaixo do limite especificado"""
         return db.query(Item).filter(Item.amount < threshold).all()
 
     @staticmethod
-    def get_items_near_expiration(db: Session, days: int = 7) -> list[Item]:
+    def find_items_near_expiration(db: Session, days: int = 7) -> list[Item]:
         """Retorna itens que vencem nos próximos N dias"""
         today = datetime.now().date()
         target_date = today + timedelta(days=days)
@@ -66,7 +66,7 @@ class ItemRepository:
         ).order_by(Item.expiration_date).all()
 
     @staticmethod
-    def get_expired_items(db: Session) -> list[Item]:
+    def find_expired_items(db: Session) -> list[Item]:
         """Retorna itens já vencidos"""
         today = datetime.now().date()
         return db.query(Item).filter(
@@ -77,7 +77,7 @@ class ItemRepository:
         ).all()
 
     @staticmethod
-    def get_total_inventory_value(db: Session) -> Decimal:
+    def find_total_inventory_value(db: Session) -> Decimal:
         """Retorna o valor total do estoque atual"""
         result = db.query(
             func.sum(Item.amount * Item.price)
@@ -85,7 +85,7 @@ class ItemRepository:
         return result or Decimal('0')
 
     @staticmethod
-    def get_inventory_summary(db: Session) -> dict:
+    def find_inventory_summary(db: Session) -> dict:
         """Retorna resumo completo do estoque"""
         total_items = db.query(func.count(Item.id)).scalar()
         total_value = ItemRepository.get_total_inventory_value(db)
@@ -106,7 +106,7 @@ class ItemRepository:
         }
 
     @staticmethod
-    def get_items_by_value_ranking(db: Session, limit: int = 10) -> list[dict]:
+    def find_items_by_value_ranking(db: Session, limit: int = 10) -> list[dict]:
         """Retorna os N itens com maior valor em estoque (amount * price)"""
         results = db.query(
             Item.id,

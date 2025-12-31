@@ -56,6 +56,11 @@ class ItemController:
         item = ItemRepository.save(db, Item(id=id, **request.model_dump()))
         return ItemResponse.model_validate(item)
 
+    @staticmethod
+    def get_low_stock_items(threshold: int, db: Session = Depends(get_db)):
+        items = ItemRepository.get_low_stock_items(db, threshold)
+        return [ItemResponse.model_validate(item) for item in items]
+
 
 def default_validators(request: ItemRequest):
     if request.price < 0:

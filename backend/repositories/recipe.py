@@ -51,7 +51,7 @@ class RecipeRepository:
             return True
 
     @staticmethod
-    def get_recipe_cost(db: Session, recipe_id: int) -> dict:
+    def find_recipe_cost(db: Session, recipe_id: int) -> dict:
         """Calcula o custo total de uma receita baseado nos preços atuais"""
         recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
         if not recipe:
@@ -81,7 +81,7 @@ class RecipeRepository:
         }
 
     @staticmethod
-    def get_all_recipes_with_cost(db: Session) -> list[dict]:
+    def find_all_recipes_with_cost(db: Session) -> list[dict]:
         """Retorna todas as receitas com seus custos calculados"""
         recipes = db.query(Recipe).all()
         return [
@@ -90,15 +90,14 @@ class RecipeRepository:
         ]
 
     @staticmethod
-    def get_feasible_recipes(db: Session) -> list[dict]:
+    def find_feasible_recipes(db: Session) -> list[dict]:
         """Retorna receitas que podem ser feitas com o estoque atual"""
         recipes = db.query(Recipe).all()
         feasible = []
 
         for recipe in recipes:
             can_make = True
-            missing_items = []
-
+            missing_items = find
             for recipe_item in recipe.recipe_itens:
                 item = recipe_item.item
                 if item.amount < recipe_item.amount:
@@ -121,7 +120,7 @@ class RecipeRepository:
         return feasible
 
     @staticmethod
-    def get_most_used_ingredients(db: Session, limit: int = 10) -> list[dict]:
+    def find_most_used_ingredients(db: Session, limit: int = 10) -> list[dict]:
         """Retorna os ingredientes mais utilizados em receitas"""
         results = db.query(
             Item.id,
