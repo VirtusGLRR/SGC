@@ -46,3 +46,87 @@ class ItemRepository:
             db.delete(item)
             db.commit()
 
+    @staticmethod
+    def get_low_stock_items(db: Session, threshold: Decimal = Decimal('10')) -> list[Item]:
+        """Retorna itens com estoque abaixo do limite especificado"""
+        return db.query(Item).filter(Item.amount < threshold).all()
+
+    @staticmethod
+    def get_items_near_expiration(db: Session, days: int = 7) -> list[Item]:
+        """Retorna itens que vencem nos próximos N dias"""
+        today = datetime.now().date()
+        target_date = today + timedelta(days=days)
+
+        return db.query(Item).filter(
+            and_(
+                Item.expiration_date.isnot(None),
+                Item.expiration_date >= today,
+                Item.expiration_date <= target_date
+            )
+        ).order_by(Item.expiration_date).all()
+
+    @staticmethod
+    def get_expired_items(db: Session) -> list[Item]:
+        """Retorna itens já vencidos"""
+        today = datetime.now().date()
+        return db.query(Item).filter(
+            and_(
+                Item.expiration_date.isnot(None),
+                Item.expiration_date < today
+            )
+        ).all()
+
+    @staticmethod
+    def get_total_inventory_value(db: Session) -> Decimal:
+        """Retorna o valor total do estoque atual"""
+        result = db.query(
+            func.sum(Item.amount * Item.price)
+        ).scalar()
+        return result or Decimal('0')
+
+    @staticmethod
+    def get_inventory_summary(db: Session) -> dict:
+        """Retorna resumo completo do estoque"""
+        total_items = db.query(func.count(Item.id)).scalar()
+        total_value = ItemRepository.get_total_inventory_value(db)
+
+        items_with_stock = db.query(func.count(Item.id)).filter(
+            Item.amount > 0
+        ).scalar()
+
+        items_out_of_stock = db.query(func.count(Item.id)).filter(
+            Item.amount == 0
+        ).scalar()
+
+        return {
+            "total_items": total_items,
+            "items_with_stock": items_with_stock,
+            "items_out_of_stock": items_out_of_stock,
+            "total_inventory_value": float(total_value)
+        }
+
+    @staticmethod
+    def get_items_by_value_ranking(db: Session, limit: int = 10) -> list[dict]:
+        """Retorna os N itens com maior valor em estoque (amount * price)"""
+        results = db.query(
+            Item.id,
+            Item.name,
+            Item.amount,
+            Item.price,
+            (Item.amount * Item.price).label('total_value')
+        ).filter(
+            Item.amount > 0
+        ).order_by(
+            (Item.amount * Item.price).desc()
+        ).limit(limit).all()
+
+        return [
+            {
+                "id": r.id,
+                "name": r.name,
+                "amount": float(r.amount),
+                "price": float(r.price),
+                "total_value": float(r.total_value)
+            }
+            for r in results
+        ]
