@@ -58,8 +58,13 @@ class ItemController:
 
     @staticmethod
     def get_low_stock_items(threshold: int, db: Session = Depends(get_db)):
-        items = ItemRepository.find_low_stock_items(db, threshold)
-        return [ItemResponse.model_validate(item) for item in items]
+        try:
+            items = ItemRepository.find_low_stock_items(db, threshold)
+            return [ItemResponse.model_validate(item) for item in items]
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
 
 
 def default_validators(request: ItemRequest):
