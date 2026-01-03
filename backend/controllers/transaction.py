@@ -8,20 +8,22 @@ from repositories import TransactionRepository, ItemRepository
 from schemas import TransactionResponse, TransactionRequest
 
 class TransactionController:
-
     @staticmethod
     def create(request: TransactionRequest, db: Session = Depends(get_db)):
+        """Cria uma nova transação após validações padrão."""
         default_validators(request, db)
         transaction = TransactionRepository.save(db, Transaction(**request.model_dump()))
         return TransactionResponse.model_validate(transaction)
 
     @staticmethod
     def find_all(db: Session = Depends(get_db)):
+        """Retorna todas as transações cadastradas."""
         transactions = TransactionRepository.find_all(db)
         return [TransactionResponse.model_validate(transaction) for transaction in transactions]
 
     @staticmethod
     def find_by_id(id: int, db: Session = Depends(get_db)):
+        """Retorna uma transação pelo seu ID."""
         transaction = TransactionRepository.find_by_id(db, id)
         if not transaction:
             raise HTTPException(
@@ -31,11 +33,13 @@ class TransactionController:
 
     @staticmethod
     def find_by_item_id(item_id: int, db: Session = Depends(get_db)):
+        """Retorna todas as transações associadas a um item específico."""
         transactions = TransactionRepository.find_by_item_id(db, item_id)
         return [TransactionResponse.model_validate(transaction) for transaction in transactions]
 
     @staticmethod
     def delete_by_id(id: int, db: Session = Depends(get_db)):
+        """Remove uma transação pelo seu ID após verificar sua existência."""
         if not TransactionRepository.exists_by_id(db, id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Transação não encontrada"
@@ -48,6 +52,7 @@ class TransactionController:
 
     @staticmethod
     def update(id: int, request: TransactionRequest, db: Session = Depends(get_db)):
+        """Atualiza uma transação existente após validações padrão."""
         default_validators(request, db)
         if not TransactionRepository.exists_by_id(db, id):
             raise HTTPException(
@@ -156,11 +161,6 @@ class TransactionController:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
                 detail=str(e)
             )
-
-
-
-
-
 
 def default_validators(request: TransactionRequest, db: Session):
     if request.price and request.price < 0:
