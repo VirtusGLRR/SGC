@@ -5,22 +5,24 @@ from schemas import ItemResponse
 from conftest import db_session
 from database.database import get_db
 
+
 def override_get_db(db_session):
     yield db_session
 
+
 @pytest.fixture
 def client(db_session):
-
     app.dependency_overrides[get_db] = lambda: db_session
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
 
+
 @pytest.mark.parametrize(
     "payload",
     [
-        {"name": "Notebook", "price": 1500.0, "measure_unity": "Unity", "amount": 10},
-        {"name": "Mouse", "price": 30.50, "measure_unity": "Unity", "amount": 10},
+        {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
+        {"name": "Mouse", "price": 30.50, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
     ]
 )
 def test_create_item(client, payload):
@@ -32,14 +34,16 @@ def test_create_item(client, payload):
 
     assert item_response.name == payload["name"]
     assert item_response.price == payload["price"]
+    assert item_response.price_unit == payload["price_unit"]
     assert item_response.measure_unity == payload["measure_unity"]
     assert item_response.amount == payload["amount"]
     assert item_response.id is not None
 
+
 @pytest.mark.parametrize(
     "payload",
     [
-        {"price": 1500.0, "measure_unity": "Unity", "amount": 10},
+        {"price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
     ]
 )
 def test_create_item_missign_mandatory_args(client, payload):
@@ -47,23 +51,25 @@ def test_create_item_missign_mandatory_args(client, payload):
 
     assert response.status_code == 422
 
+
 @pytest.mark.parametrize(
     "payload",
     [
-        {"name": "", "price": 1500.0, "measure_unity": "Unity", "amount": 10},
-        {"name": "Notebook", "price": 1500.0, "measure_unity": "", "amount": 10},
+        {"name": "", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
+        {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "", "amount": 10},
     ]
 )
 def test_create_item_with_empty_mandatory_args(client, payload):
     response = client.post("/api/items", json=payload)
 
     assert response.status_code == 400
-    assert response.json()["detail"] == "Campo obrigatório vazio";
+    assert response.json()["detail"] == "Campo obrigatório vazio"
+
 
 @pytest.mark.parametrize(
     "payload",
     [
-        {"name": "Notebook", "price": -1, "measure_unity": "Unity", "amount": 10},
+        {"name": "Notebook", "price": -1, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
     ]
 )
 def test_create_item_illegal_price(client, payload):
@@ -72,11 +78,12 @@ def test_create_item_illegal_price(client, payload):
     assert response.status_code == 400
     assert response.json()["detail"] == "O preço deve ser maior que zero"
 
+
 @pytest.mark.parametrize(
     "payload",
     [
-        {"name": "Notebook", "price": 1500.0, "measure_unity": "Unity", "amount": 10},
-        {"name": "Mouse", "price": 30.50, "measure_unity": "Unity", "amount": 10},
+        {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
+        {"name": "Mouse", "price": 30.50, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
     ]
 )
 def test_update_item(client, payload):
@@ -101,6 +108,7 @@ def test_update_item(client, payload):
     assert updated_item.id == old_item_id
     assert updated_item.name == "Notebook Acer"
     assert updated_item.price == payload["price"]
+    assert updated_item.price_unit == payload["price_unit"]
     assert updated_item.measure_unity == payload["measure_unity"]
     assert updated_item.amount == payload["amount"]
 
@@ -108,8 +116,8 @@ def test_update_item(client, payload):
 @pytest.mark.parametrize(
     "payload",
     [
-        {"name": "Notebook", "price": 1500.0, "measure_unity": "Unity", "amount": 10},
-        {"name": "Mouse", "price": 30.50, "measure_unity": "Unity", "amount": 10},
+        {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
+        {"name": "Mouse", "price": 30.50, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
     ]
 )
 def test_delete_item(client, payload):
@@ -130,8 +138,8 @@ def test_delete_item(client, payload):
 
 def test_get_all_items(client):
     payload = [
-        {"name": "Notebook", "price": 1500.0, "measure_unity": "Unity", "amount": 10},
-        {"name": "Mouse", "price": 30.50, "measure_unity": "Unity", "amount": 10},
+        {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
+        {"name": "Mouse", "price": 30.50, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
     ]
     response_1 = client.post("/api/items", json=payload[0])
     assert response_1.status_code == 201
@@ -145,6 +153,7 @@ def test_get_all_items(client):
     for i in range(len(payload)):
         assert items[i].name == payload[i]["name"]
         assert items[i].price == payload[i]["price"]
+        assert items[i].price_unit == payload[i]["price_unit"]
         assert items[i].measure_unity == payload[i]["measure_unity"]
         assert items[i].amount == payload[i]["amount"]
         assert items[i].id is not None
@@ -153,8 +162,8 @@ def test_get_all_items(client):
 @pytest.mark.parametrize(
     "payload",
     [
-        {"name": "Notebook", "price": 1500.0, "measure_unity": "Unity", "amount": 10},
-        {"name": "Mouse", "price": 30.50, "measure_unity": "Unity", "amount": 10},
+        {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
+        {"name": "Mouse", "price": 30.50, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
     ]
 )
 def test_get_by_id(client, payload):
@@ -170,15 +179,17 @@ def test_get_by_id(client, payload):
 
     assert inserted_item.name == filtered_item.name
     assert inserted_item.price == filtered_item.price
+    assert inserted_item.price_unit == filtered_item.price_unit
     assert inserted_item.measure_unity == filtered_item.measure_unity
     assert inserted_item.amount == filtered_item.amount
     assert inserted_item.id is not None
 
+
 @pytest.mark.parametrize(
     "payload",
     [
-        {"name": "Notebook", "price": 1500.0, "measure_unity": "Unity", "amount": 10},
-        {"name": "Mouse", "price": 30.50, "measure_unity": "Unity", "amount": 10},
+        {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
+        {"name": "Mouse", "price": 30.50, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10},
     ]
 )
 def test_get_by_name(client, payload):
@@ -198,9 +209,11 @@ def test_get_by_name(client, payload):
 
     assert inserted_item.name == filtered_item.name
     assert inserted_item.price == filtered_item.price
+    assert inserted_item.price_unit == filtered_item.price_unit
     assert inserted_item.measure_unity == filtered_item.measure_unity
     assert inserted_item.amount == filtered_item.amount
     assert inserted_item.id is not None
+
 
 def test_delete_empty_item(client):
     response = client.delete("/api/items/1")
@@ -209,22 +222,113 @@ def test_delete_empty_item(client):
 
 
 def test_update_amount_under_0(client):
-    notebook = {"name": "Notebook", "price": 1500.0, "measure_unity": "Unity", "amount": 10},
+    notebook = {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10}
     client.post("/api/items", json=notebook)
-    updated_notebook = {"name": "Notebook", "price": 1500.0, "measure_unity": "Unity", "amount": -1}
+    updated_notebook = {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade",
+                        "amount": -1}
     response = client.put("/api/items/1", json=updated_notebook)
     assert response.status_code == 400
     assert response.json()["detail"] == "Consumindo mais produto do que o disponível"
 
+
 def test_update_with_empty_mandatory_args(client):
-    notebook = {"name": "Notebook", "price": 1500.0, "measure_unity": "Unity", "amount": 10}
+    notebook = {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10}
     client.post("/api/items", json=notebook)
-    updated_notebook = {"name": "", "price": 1500.0, "measure_unity": "Unity", "amount": 10}
+    updated_notebook = {"name": "", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10}
     response = client.put("/api/items/1", json=updated_notebook)
     assert response.status_code == 400
     assert response.json()["detail"] == "Campo obrigatório vazio"
 
-    updated_notebook = {"name": "Notebook", "price": 1500.0, "measure_unity": "", "amount": 10}
+    updated_notebook = {"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "", "amount": 10}
     response = client.put("/api/items/1", json=updated_notebook)
     assert response.status_code == 400
     assert response.json()["detail"] == "Campo obrigatório vazio"
+
+
+def test_get_items_summary(client):
+    items_data = [
+        {"name": "Açúcar", "price": 4.50, "price_unit": "kg", "measure_unity": "grama", "amount": 2000},
+        {"name": "Farinha", "price": 5.00, "price_unit": "kg", "measure_unity": "grama", "amount": 1000},
+        {"name": "Leite", "price": 5.00, "price_unit": "litro", "measure_unity": "mililitro", "amount": 0},
+    ]
+
+    for item_data in items_data:
+        response = client.post("/api/items", json=item_data)
+        assert response.status_code == 201
+
+    response = client.get("/items/summary")
+    assert response.status_code == 200
+
+    summary = response.json()
+    assert "total_items" in summary
+    assert "items_with_stock" in summary
+    assert "items_out_of_stock" in summary
+    assert "total_inventory_value" in summary
+    assert summary["total_items"] >= 3
+    assert summary["items_with_stock"] >= 2
+    assert summary["items_out_of_stock"] >= 1
+
+
+def test_get_low_stock_items(client):
+    items_data = [
+        {"name": "Açúcar", "price": 4.50, "price_unit": "kg", "measure_unity": "grama", "amount": 3},
+        {"name": "Farinha", "price": 5.00, "price_unit": "kg", "measure_unity": "grama", "amount": 1000},
+        {"name": "Sal", "price": 2.00, "price_unit": "kg", "measure_unity": "grama", "amount": 2},
+    ]
+
+    for item_data in items_data:
+        response = client.post("/api/items", json=item_data)
+        assert response.status_code == 201
+
+    response = client.get("/items/low-stock/5")
+    assert response.status_code == 200
+
+    low_stock_items = response.json()
+    assert len(low_stock_items) >= 2
+    assert all(item["amount"] < 5 for item in low_stock_items)
+
+
+def test_get_items_near_expiration(client):
+    from datetime import datetime, timedelta
+
+    expiring_soon = (datetime.now() + timedelta(days=3)).date().isoformat()
+    expiring_later = (datetime.now() + timedelta(days=15)).date().isoformat()
+
+    items_data = [
+        {"name": "Leite", "price": 5.00, "price_unit": "litro", "measure_unity": "mililitro", "amount": 1000,
+         "expiration_date": expiring_soon},
+        {"name": "Iogurte", "price": 3.00, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10,
+         "expiration_date": expiring_later},
+        {"name": "Queijo", "price": 20.00, "price_unit": "kg", "measure_unity": "grama", "amount": 500,
+         "expiration_date": expiring_soon},
+    ]
+
+    for item_data in items_data:
+        response = client.post("/api/items", json=item_data)
+        assert response.status_code == 201
+
+    response = client.get("/items/expiring/7")
+    assert response.status_code == 200
+
+    expiring_items = response.json()
+    assert len(expiring_items) >= 2
+
+
+def test_get_items_by_value_ranking(client):
+    items_data = [
+        {"name": "Chocolate", "price": 40.00, "price_unit": "kg", "measure_unity": "grama", "amount": 1000},
+        {"name": "Açúcar", "price": 4.50, "price_unit": "kg", "measure_unity": "grama", "amount": 2000},
+        {"name": "Sal", "price": 2.00, "price_unit": "kg", "measure_unity": "grama", "amount": 500},
+    ]
+
+    for item_data in items_data:
+        response = client.post("/api/items", json=item_data)
+        assert response.status_code == 201
+
+    response = client.get("/items/top-value/3")
+    assert response.status_code == 200
+
+    top_items = response.json()
+    assert len(top_items) >= 3
+    assert "total_value" in top_items[0]
+    assert top_items[0]["total_value"] >= top_items[1]["total_value"]
