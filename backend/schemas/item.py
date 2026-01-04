@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional
+from typing import Optional, ClassVar
 from datetime import datetime
 
 class ItemBase(BaseModel):
@@ -8,7 +8,7 @@ class ItemBase(BaseModel):
     amount: float
     description: Optional[str] = None
     price: Optional[float] = 0
-    price_unit = str = "unidade"
+    price_unit: ClassVar[str] = 'unidade'
     expiration_date: Optional[datetime] = None
     create_at: Optional[datetime] = Field(default_factory=datetime.now) 
     update_at: Optional[datetime] = None
