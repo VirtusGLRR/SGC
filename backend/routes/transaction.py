@@ -20,7 +20,6 @@ def find_all_or_by_item_id(item_id: int | None = None, db: Session = Depends(get
 def find_by_id(id: int, db: Session = Depends(get_db)):
     return TransactionController.find_by_id(id, db)
 
-
 @transaction_routes.delete("/api/transactions/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
     return TransactionController.delete_by_id(id, db)
