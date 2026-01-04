@@ -27,3 +27,19 @@ def delete_by_id(id: int, db: Session = Depends(get_db)):
 @recipe_routes.put("/api/recipes/{id}", response_model=RecipeResponse)
 def update(id: int, request: RecipeRequest, db: Session = Depends(get_db)):
     return RecipeController.update(id, request, db)
+
+@recipe_routes.get("/recipes/costs")
+def get_all_recipe_costs(db: Session = Depends(get_db)):
+    return RecipeController.get_all_recipes_with_cost(db)
+
+@recipe_routes.get("/recipes/cost/{recipe_id}")
+def get_recipe_cost(recipe_id: int, db: Session = Depends(get_db)):
+    return RecipeController.get_recipe_cost(recipe_id, db)
+
+@recipe_routes.get("/recipes/feasible")
+def get_feasible_recipes(db: Session = Depends(get_db)):
+    return RecipeController.get_feasible_recipes(db)
+
+@recipe_routes.get("/recipes/popular-ingredients/{limit}")
+def get_most_popular_ingredients(limit: int = 5, db: Session = Depends(get_db)):
+    return RecipeController.get_most_used_ingredients(limit, db)
