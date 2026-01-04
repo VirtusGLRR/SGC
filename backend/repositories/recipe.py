@@ -2,7 +2,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from decimal import Decimal
 
-from models import Recipe
+from models import Recipe, RecipeItem, Item
+from utils.unit_converter import calculate_item_total_value, calculate_unit_price
 
 class RecipeRepository:
     @staticmethod
@@ -37,7 +38,7 @@ class RecipeRepository:
         if recipe is not None:
             db.delete(recipe)
             db.commit()
-    
+
     @staticmethod
     def find_by_name(db: Session, name: int) -> Recipe:
         """Recupera uma receita pelo seu nome."""
@@ -54,7 +55,7 @@ class RecipeRepository:
 
     @staticmethod
     def find_recipe_cost(db: Session, recipe_id: int) -> dict:
-        """Calcula o custo total de uma receita baseado nos preços atuais"""
+        """Calcula o custo total de uma receita baseado nos preços atuais com conversão de unidades"""
         recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
         if not recipe:
             return None
@@ -64,14 +65,23 @@ class RecipeRepository:
 
         for recipe_item in recipe.recipe_itens:
             item = recipe_item.item
-            item_cost = recipe_item.amount * item.price
+
+            unit_price = calculate_unit_price(
+                item.price,
+                item.price_unit,
+                item.measure_unity
+            )
+
+            item_cost = recipe_item.amount * unit_price
             total_cost += item_cost
 
             ingredients.append({
                 "item_id": item.id,
                 "item_name": item.name,
                 "required_amount": float(recipe_item.amount),
-                "unit_price": float(item.price),
+                "measure_unity": item.measure_unity,
+                "unit_price": float(unit_price),
+                "price_reference": f"{float(item.price)}/{item.price_unit}",
                 "total_cost": float(item_cost)
             })
 
@@ -146,5 +156,3 @@ class RecipeRepository:
             }
             for r in results
         ]
-
-        
