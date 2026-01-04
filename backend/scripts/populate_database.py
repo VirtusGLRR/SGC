@@ -2,7 +2,6 @@ import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 
-# Adiciona o diretório backend ao path
 backend_path = Path(__file__).parent.parent
 sys.path.insert(0, str(backend_path))
 
@@ -10,10 +9,14 @@ from database.database import SessionLocal, engine, Base
 from models.item import Item
 from models.recipe import Recipe
 from models.recipe_item import RecipeItem
+from models.transaction import Transaction
 
 
 def populate_database():
-    """Popula o banco de dados com dados de teste"""
+    """
+    Popula o banco de dados com dados de teste incluindo itens, receitas,
+    vínculos de ingredientes e transações
+    """
 
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
@@ -163,6 +166,7 @@ def populate_database():
         for item in items:
             db.refresh(item)
         print(f"{len(items)} itens criados!")
+
         print("\nCriando receitas...")
         recipe1 = Recipe(
             title="torta banoffee",
@@ -201,7 +205,6 @@ def populate_database():
 7. sirva em forminhas de papel."""
         )
 
-        # Receita 4 - Risoto de Camarão (sem ingredientes disponíveis)
         recipe4 = Recipe(
             title="risoto de camarão",
             description="risoto cremoso com camarões frescos e vinho branco",
@@ -227,12 +230,11 @@ def populate_database():
 
         print("\nCriando ingredientes para risoto (indisponíveis)...")
 
-        # Ingredientes para o risoto que NÃO estão disponíveis (quantidade = 0)
         risoto_items = [
             Item(
                 name="arroz arbóreo",
                 measure_unity="grama",
-                amount=0,  # INDISPONÍVEL
+                amount=0,
                 description="arroz para risoto",
                 price=12.00,
                 expiration_date=datetime.now().date() + timedelta(days=365)
@@ -240,7 +242,7 @@ def populate_database():
             Item(
                 name="camarão",
                 measure_unity="grama",
-                amount=0,  # INDISPONÍVEL
+                amount=0,
                 description="camarões limpos e frescos",
                 price=45.00,
                 expiration_date=datetime.now().date() + timedelta(days=3)
@@ -248,7 +250,7 @@ def populate_database():
             Item(
                 name="vinho branco",
                 measure_unity="mililitro",
-                amount=0,  # INDISPONÍVEL
+                amount=0,
                 description="vinho branco seco para culinária",
                 price=25.00,
                 expiration_date=datetime.now().date() + timedelta(days=730)
@@ -256,7 +258,7 @@ def populate_database():
             Item(
                 name="caldo de legumes",
                 measure_unity="mililitro",
-                amount=0,  # INDISPONÍVEL
+                amount=0,
                 description="caldo de legumes caseiro",
                 price=8.00,
                 expiration_date=datetime.now().date() + timedelta(days=5)
@@ -264,7 +266,7 @@ def populate_database():
             Item(
                 name="queijo parmesão",
                 measure_unity="grama",
-                amount=0,  # INDISPONÍVEL
+                amount=0,
                 description="queijo parmesão ralado",
                 price=18.00,
                 expiration_date=datetime.now().date() + timedelta(days=30)
@@ -281,7 +283,6 @@ def populate_database():
         print(f"{len(risoto_items)} ingredientes do risoto criados (todos indisponíveis)!")
 
         print("\nVinculando ingredientes às receitas...")
-
 
         recipe1_items = [
             RecipeItem(recipe_id=recipe1.id, item_id=items[0].id, amount=4),
@@ -327,13 +328,184 @@ def populate_database():
 
         print(f"{len(all_recipe_items)} vínculos criados!")
 
-        print("\n" + "="*50)
+        print("\nCriando transações...")
+
+        transactions = [
+            Transaction(
+                item_id=items[0].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=5)).date(),
+                amount=20,
+                price=10.00
+            ),
+            Transaction(
+                item_id=items[0].id,
+                order_type="saída",
+                description="uso em receita: torta banoffee",
+                create_at=(datetime.now() - timedelta(days=2)).date(),
+                amount=4,
+                price=None
+            ),
+            Transaction(
+                item_id=items[0].id,
+                order_type="saída",
+                description="uso em receita: pavê de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=4,
+                price=None
+            ),
+            Transaction(
+                item_id=items[1].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=10)).date(),
+                amount=1000,
+                price=15.00
+            ),
+            Transaction(
+                item_id=items[1].id,
+                order_type="saída",
+                description="uso em receita: brigadeiro de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=200,
+                price=None
+            ),
+            Transaction(
+                item_id=items[3].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=15)).date(),
+                amount=500,
+                price=20.00
+            ),
+            Transaction(
+                item_id=items[3].id,
+                order_type="saída",
+                description="uso em receita: torta banoffee",
+                create_at=(datetime.now() - timedelta(days=2)).date(),
+                amount=100,
+                price=None
+            ),
+            Transaction(
+                item_id=items[3].id,
+                order_type="saída",
+                description="uso em receita: brigadeiro de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=20,
+                price=None
+            ),
+            Transaction(
+                item_id=items[3].id,
+                order_type="saída",
+                description="venda direta ao cliente",
+                create_at=(datetime.now() - timedelta(days=3)).date(),
+                amount=180,
+                price=32.40
+            ),
+            Transaction(
+                item_id=items[5].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=20)).date(),
+                amount=5000,
+                price=11.25
+            ),
+            Transaction(
+                item_id=items[5].id,
+                order_type="saída",
+                description="uso geral na cozinha",
+                create_at=(datetime.now() - timedelta(days=10)).date(),
+                amount=3000,
+                price=None
+            ),
+            Transaction(
+                item_id=items[7].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=3)).date(),
+                amount=3000,
+                price=15.00
+            ),
+            Transaction(
+                item_id=items[7].id,
+                order_type="saída",
+                description="uso em receita: pavê de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=480,
+                price=None
+            ),
+            Transaction(
+                item_id=items[7].id,
+                order_type="saída",
+                description="consumo direto",
+                create_at=(datetime.now() - timedelta(days=2)).date(),
+                amount=520,
+                price=None
+            ),
+            Transaction(
+                item_id=items[11].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=30)).date(),
+                amount=1000,
+                price=20.00
+            ),
+            Transaction(
+                item_id=items[11].id,
+                order_type="saída",
+                description="uso em receita: brigadeiro de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=100,
+                price=None
+            ),
+            Transaction(
+                item_id=items[11].id,
+                order_type="saída",
+                description="uso em decorações diversas",
+                create_at=(datetime.now() - timedelta(days=15)).date(),
+                amount=500,
+                price=None
+            ),
+            Transaction(
+                item_id=items[6].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=25)).date(),
+                amount=1590,
+                price=21.00
+            ),
+            Transaction(
+                item_id=items[6].id,
+                order_type="saída",
+                description="uso em receita: pavê de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=395,
+                price=None
+            ),
+            Transaction(
+                item_id=items[6].id,
+                order_type="saída",
+                description="uso em receita: brigadeiro de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=395,
+                price=None
+            ),
+        ]
+
+        db.add_all(transactions)
+        db.commit()
+
+        print(f"{len(transactions)} transações criadas!")
+
+        print("\n" + "=" * 50)
         print("BANCO DE DADOS POPULADO COM SUCESSO!")
-        print("="*50)
+        print("=" * 50)
         print(f"\nResumo:")
         print(f"   - {len(items)} itens criados")
         print(f"   - 4 receitas criadas")
         print(f"   - {len(all_recipe_items)} ingredientes vinculados")
+        print(f"   - {len(transactions)} transações criadas")
         print("\nReceitas disponíveis:")
         print(f"   1. {recipe1.title} (ingredientes disponíveis)")
         print(f"   2. {recipe2.title} (ingredientes disponíveis)")
@@ -350,4 +522,3 @@ def populate_database():
 
 if __name__ == "__main__":
     populate_database()
-
