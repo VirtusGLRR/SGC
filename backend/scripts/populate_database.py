@@ -2,7 +2,6 @@ import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 
-# Adiciona o diretório backend ao path
 backend_path = Path(__file__).parent.parent
 sys.path.insert(0, str(backend_path))
 
@@ -10,10 +9,15 @@ from database.database import SessionLocal, engine, Base
 from models.item import Item
 from models.recipe import Recipe
 from models.recipe_item import RecipeItem
+from models.bot import Bot
+from models.transaction import Transaction
 
 
 def populate_database():
-    """Popula o banco de dados com dados de teste"""
+    """
+    Popula o banco de dados com dados de teste incluindo itens, receitas,
+    vínculos de ingredientes, conversas do bot e transações
+    """
 
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
@@ -27,6 +31,7 @@ def populate_database():
                 amount=12,
                 description="bananas nanicas maduras",
                 price=0.50,
+                price_unit="unidade",
                 expiration_date=datetime.now().date() + timedelta(days=5)
             ),
             Item(
@@ -35,6 +40,7 @@ def populate_database():
                 amount=800,
                 description="doce de leite cremoso",
                 price=15.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=180)
             ),
             Item(
@@ -42,7 +48,8 @@ def populate_database():
                 measure_unity="grama",
                 amount=400,
                 description="biscoito tipo maisena triturado",
-                price=5.00,
+                price=10.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=90)
             ),
             Item(
@@ -50,7 +57,8 @@ def populate_database():
                 measure_unity="grama",
                 amount=200,
                 description="manteiga sem sal",
-                price=8.00,
+                price=40.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=30)
             ),
             Item(
@@ -59,6 +67,7 @@ def populate_database():
                 amount=1000,
                 description="creme de leite fresco",
                 price=6.00,
+                price_unit="litro",
                 expiration_date=datetime.now().date() + timedelta(days=15)
             ),
             Item(
@@ -67,6 +76,7 @@ def populate_database():
                 amount=2000,
                 description="açúcar refinado",
                 price=4.50,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=365)
             ),
             Item(
@@ -75,6 +85,7 @@ def populate_database():
                 amount=800,
                 description="leite condensado",
                 price=7.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=180)
             ),
             Item(
@@ -83,6 +94,7 @@ def populate_database():
                 amount=2000,
                 description="leite integral",
                 price=5.00,
+                price_unit="litro",
                 expiration_date=datetime.now().date() + timedelta(days=7)
             ),
             Item(
@@ -90,7 +102,8 @@ def populate_database():
                 measure_unity="grama",
                 amount=500,
                 description="amido de milho (maisena)",
-                price=4.00,
+                price=8.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=365)
             ),
             Item(
@@ -99,6 +112,7 @@ def populate_database():
                 amount=12,
                 description="gemas de ovos",
                 price=0.60,
+                price_unit="unidade",
                 expiration_date=datetime.now().date() + timedelta(days=7)
             ),
             Item(
@@ -106,7 +120,8 @@ def populate_database():
                 measure_unity="grama",
                 amount=300,
                 description="biscoito tipo champanhe",
-                price=6.00,
+                price=20.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=90)
             ),
             Item(
@@ -114,7 +129,8 @@ def populate_database():
                 measure_unity="grama",
                 amount=400,
                 description="chocolate em pó ou cacau",
-                price=8.00,
+                price=40.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=365)
             ),
             Item(
@@ -122,7 +138,8 @@ def populate_database():
                 measure_unity="grama",
                 amount=100,
                 description="canela em pó",
-                price=3.50,
+                price=35.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=365)
             ),
             Item(
@@ -130,7 +147,8 @@ def populate_database():
                 measure_unity="grama",
                 amount=300,
                 description="nozes",
-                price=15.00,
+                price=50.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=90)
             ),
             Item(
@@ -139,6 +157,7 @@ def populate_database():
                 amount=1000,
                 description="farinha de trigo",
                 price=5.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=365)
             ),
             Item(
@@ -146,7 +165,8 @@ def populate_database():
                 measure_unity="mililitro",
                 amount=50,
                 description="extrato de baunilha",
-                price=12.00,
+                price=240.00,
+                price_unit="litro",
                 expiration_date=datetime.now().date() + timedelta(days=365)
             ),
             Item(
@@ -155,6 +175,7 @@ def populate_database():
                 amount=5,
                 description="limões",
                 price=0.80,
+                price_unit="unidade",
                 expiration_date=datetime.now().date() + timedelta(days=7)
             ),
         ]
@@ -163,6 +184,7 @@ def populate_database():
         for item in items:
             db.refresh(item)
         print(f"{len(items)} itens criados!")
+
         print("\nCriando receitas...")
         recipe1 = Recipe(
             title="torta banoffee",
@@ -201,7 +223,6 @@ def populate_database():
 7. sirva em forminhas de papel."""
         )
 
-        # Receita 4 - Risoto de Camarão (sem ingredientes disponíveis)
         recipe4 = Recipe(
             title="risoto de camarão",
             description="risoto cremoso com camarões frescos e vinho branco",
@@ -227,46 +248,50 @@ def populate_database():
 
         print("\nCriando ingredientes para risoto (indisponíveis)...")
 
-        # Ingredientes para o risoto que NÃO estão disponíveis (quantidade = 0)
         risoto_items = [
             Item(
                 name="arroz arbóreo",
                 measure_unity="grama",
-                amount=0,  # INDISPONÍVEL
+                amount=0,
                 description="arroz para risoto",
                 price=12.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=365)
             ),
             Item(
                 name="camarão",
                 measure_unity="grama",
-                amount=0,  # INDISPONÍVEL
+                amount=0,
                 description="camarões limpos e frescos",
-                price=45.00,
+                price=60.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=3)
             ),
             Item(
                 name="vinho branco",
                 measure_unity="mililitro",
-                amount=0,  # INDISPONÍVEL
+                amount=0,
                 description="vinho branco seco para culinária",
                 price=25.00,
+                price_unit="litro",
                 expiration_date=datetime.now().date() + timedelta(days=730)
             ),
             Item(
                 name="caldo de legumes",
                 measure_unity="mililitro",
-                amount=0,  # INDISPONÍVEL
+                amount=0,
                 description="caldo de legumes caseiro",
                 price=8.00,
+                price_unit="litro",
                 expiration_date=datetime.now().date() + timedelta(days=5)
             ),
             Item(
                 name="queijo parmesão",
                 measure_unity="grama",
-                amount=0,  # INDISPONÍVEL
+                amount=0,
                 description="queijo parmesão ralado",
-                price=18.00,
+                price=80.00,
+                price_unit="kg",
                 expiration_date=datetime.now().date() + timedelta(days=30)
             ),
         ]
@@ -281,7 +306,6 @@ def populate_database():
         print(f"{len(risoto_items)} ingredientes do risoto criados (todos indisponíveis)!")
 
         print("\nVinculando ingredientes às receitas...")
-
 
         recipe1_items = [
             RecipeItem(recipe_id=recipe1.id, item_id=items[0].id, amount=4),
@@ -327,13 +351,237 @@ def populate_database():
 
         print(f"{len(all_recipe_items)} vínculos criados!")
 
-        print("\n" + "="*50)
+        print("\nCriando conversas do bot...")
+
+        bot_conversations = [
+            Bot(
+                thread_id="thread_001",
+                user_message="quais receitas posso fazer com banana?",
+                ai_message="você pode fazer torta banoffee, pavê de banana com doce de leite e brigadeiro de banana com doce de leite. todas essas receitas utilizam banana nanica como ingrediente principal.",
+                create_at=datetime.now().isoformat()
+            ),
+            Bot(
+                thread_id="thread_001",
+                user_message="tenho todos os ingredientes para a torta banoffee?",
+                ai_message="sim, você tem todos os ingredientes necessários para fazer a torta banoffee. você precisa de 4 bananas nanicas, 400g de doce de leite, 200g de biscoito maisena, 100g de manteiga, 500ml de creme de leite, 80g de açúcar e 30g de chocolate em pó.",
+                create_at=(datetime.now() + timedelta(minutes=2)).isoformat()
+            ),
+            Bot(
+                thread_id="thread_002",
+                user_message="quanto de leite tenho no estoque?",
+                ai_message="você tem 2000 mililitros de leite integral em estoque.",
+                create_at=(datetime.now() - timedelta(days=1)).isoformat()
+            ),
+            Bot(
+                thread_id="thread_002",
+                user_message="quando vence o leite?",
+                ai_message=f"o leite vence em {(datetime.now().date() + timedelta(days=7)).strftime('%d/%m/%Y')}, daqui a 7 dias.",
+                create_at=(datetime.now() - timedelta(days=1) + timedelta(minutes=1)).isoformat()
+            ),
+            Bot(
+                thread_id="thread_003",
+                user_message="posso fazer risoto de camarão?",
+                ai_message="infelizmente não é possível fazer o risoto de camarão no momento. faltam os seguintes ingredientes: arroz arbóreo (300g), camarão (400g), vinho branco (150ml), caldo de legumes (1000ml) e queijo parmesão (50g). todos estes ingredientes estão indisponíveis no estoque.",
+                create_at=(datetime.now() - timedelta(hours=3)).isoformat()
+            ),
+            Bot(
+                thread_id="thread_004",
+                user_message="quais ingredientes estão com validade próxima?",
+                ai_message="os ingredientes com validade mais próxima são: banana nanica (vence em 5 dias), leite (vence em 7 dias), gema de ovo (vence em 7 dias) e limão (vence em 7 dias). recomendo usar estes ingredientes primeiro.",
+                create_at=(datetime.now() - timedelta(hours=6)).isoformat()
+            ),
+            Bot(
+                thread_id="thread_005",
+                user_message="me mostre receitas doces",
+                ai_message="tenho três receitas doces disponíveis: torta banoffee, pavê de banana com doce de leite e brigadeiro de banana com doce de leite. todas utilizam banana e doce de leite como ingredientes principais.",
+                create_at=(datetime.now() - timedelta(days=2)).isoformat()
+            ),
+        ]
+
+        db.add_all(bot_conversations)
+        db.commit()
+
+        print(f"{len(bot_conversations)} conversas do bot criadas!")
+
+        print("\nCriando transações...")
+
+        transactions = [
+            Transaction(
+                item_id=items[0].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=5)).date(),
+                amount=20,
+                price=0.50
+            ),
+            Transaction(
+                item_id=items[0].id,
+                order_type="saída",
+                description="uso em receita: torta banoffee",
+                create_at=(datetime.now() - timedelta(days=2)).date(),
+                amount=4,
+                price=None
+            ),
+            Transaction(
+                item_id=items[0].id,
+                order_type="saída",
+                description="uso em receita: pavê de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=4,
+                price=None
+            ),
+            Transaction(
+                item_id=items[1].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=10)).date(),
+                amount=1000,
+                price=15.00
+            ),
+            Transaction(
+                item_id=items[1].id,
+                order_type="saída",
+                description="uso em receita: brigadeiro de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=200,
+                price=None
+            ),
+            Transaction(
+                item_id=items[3].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=15)).date(),
+                amount=500,
+                price=40.00
+            ),
+            Transaction(
+                item_id=items[3].id,
+                order_type="saída",
+                description="uso em receita: torta banoffee",
+                create_at=(datetime.now() - timedelta(days=2)).date(),
+                amount=100,
+                price=None
+            ),
+            Transaction(
+                item_id=items[3].id,
+                order_type="saída",
+                description="uso em receita: brigadeiro de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=20,
+                price=None
+            ),
+            Transaction(
+                item_id=items[3].id,
+                order_type="saída",
+                description="venda direta ao cliente",
+                create_at=(datetime.now() - timedelta(days=3)).date(),
+                amount=180,
+                price=40.00
+            ),
+            Transaction(
+                item_id=items[5].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=20)).date(),
+                amount=5000,
+                price=4.50
+            ),
+            Transaction(
+                item_id=items[5].id,
+                order_type="saída",
+                description="uso geral na cozinha",
+                create_at=(datetime.now() - timedelta(days=10)).date(),
+                amount=3000,
+                price=None
+            ),
+            Transaction(
+                item_id=items[7].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=3)).date(),
+                amount=3000,
+                price=5.00
+            ),
+            Transaction(
+                item_id=items[7].id,
+                order_type="saída",
+                description="uso em receita: pavê de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=480,
+                price=None
+            ),
+            Transaction(
+                item_id=items[7].id,
+                order_type="saída",
+                description="consumo direto",
+                create_at=(datetime.now() - timedelta(days=2)).date(),
+                amount=520,
+                price=None
+            ),
+            Transaction(
+                item_id=items[11].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=30)).date(),
+                amount=1000,
+                price=40.00
+            ),
+            Transaction(
+                item_id=items[11].id,
+                order_type="saída",
+                description="uso em receita: brigadeiro de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=100,
+                price=None
+            ),
+            Transaction(
+                item_id=items[11].id,
+                order_type="saída",
+                description="uso em decorações diversas",
+                create_at=(datetime.now() - timedelta(days=15)).date(),
+                amount=500,
+                price=None
+            ),
+            Transaction(
+                item_id=items[6].id,
+                order_type="entrada",
+                description="compra inicial de estoque",
+                create_at=(datetime.now() - timedelta(days=25)).date(),
+                amount=1590,
+                price=7.00
+            ),
+            Transaction(
+                item_id=items[6].id,
+                order_type="saída",
+                description="uso em receita: pavê de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=395,
+                price=None
+            ),
+            Transaction(
+                item_id=items[6].id,
+                order_type="saída",
+                description="uso em receita: brigadeiro de banana",
+                create_at=(datetime.now() - timedelta(days=1)).date(),
+                amount=395,
+                price=None
+            ),
+        ]
+
+        db.add_all(transactions)
+        db.commit()
+
+        print(f"{len(transactions)} transações criadas!")
+
+        print("\n" + "=" * 50)
         print("BANCO DE DADOS POPULADO COM SUCESSO!")
-        print("="*50)
+        print("=" * 50)
         print(f"\nResumo:")
         print(f"   - {len(items)} itens criados")
         print(f"   - 4 receitas criadas")
         print(f"   - {len(all_recipe_items)} ingredientes vinculados")
+        print(f"   - {len(bot_conversations)} conversas do bot criadas")
+        print(f"   - {len(transactions)} transações criadas")
         print("\nReceitas disponíveis:")
         print(f"   1. {recipe1.title} (ingredientes disponíveis)")
         print(f"   2. {recipe2.title} (ingredientes disponíveis)")
@@ -350,4 +598,3 @@ def populate_database():
 
 if __name__ == "__main__":
     populate_database()
-
