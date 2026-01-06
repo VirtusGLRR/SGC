@@ -23,7 +23,7 @@ DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NA
 db = SQLDatabase.from_uri(DATABASE_URL)
 
 sql_recipe_reader = create_sql_agent(
-    llm, db=db, verbose=False, agent_type="tool-calling",
+    llm, db=db, verbose=True, agent_type="tool-calling",
     handle_parsing_errors=True, prefix_prompt=load_prompt("sql_recipe_reader"),
     extra_tools=[check_recipe_availability]
 )
