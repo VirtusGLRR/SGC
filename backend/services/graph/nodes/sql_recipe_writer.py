@@ -1,9 +1,19 @@
 from langchain_core.messages import HumanMessage, AIMessage
 from ..agents import sql_recipe_writer
 from ..state import AgentState
+import json
 
 def sql_recipe_writer_node(state : AgentState):
-    response = sql_recipe_writer.invoke(state['sql_recipe_instruction'])
+    # Converter os dados estruturados em mensagem
+    instruction_data = state['sql_recipe_instruction']
+
+    # Converter para JSON string para passar ao agente
+    if hasattr(instruction_data, 'model_dump'):
+        instruction_json = json.dumps(instruction_data.model_dump(), ensure_ascii=False, indent=2)
+    else:
+        instruction_json = json.dumps(instruction_data, ensure_ascii=False, indent=2)
+
+    response = sql_recipe_writer.invoke(f"Processe os seguintes dados de receitas:\n\n{instruction_json}")
 
     if isinstance(response, dict):
         if 'output' in response:

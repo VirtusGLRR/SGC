@@ -3,7 +3,8 @@ from ..agents import structurer_recipe_agent
 from ..state import AgentState
 
 def structurer_recipe_node(state: AgentState):
-    history = state['messages']
+    history = state['messages'][-2:]
+    print("State messages:", state['messages'][-2:])
 
     context_messages = []
     for msg in history:

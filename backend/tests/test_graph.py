@@ -10,7 +10,7 @@ sys.path.insert(0, str(backend_dir))
 
 from services.graph.graph import graph
 
-thread = {"configurable": {"thread_id": "3"}}
+thread = {"configurable": {"thread_id": "4"}}
 
 def main():
     print("Assistente de Culinária iniciado!")

@@ -9,6 +9,7 @@ from .structurer_recipe import structurer_recipe_agent
 from .trivial import trivial_agent
 from .web import web_agent
 from .structurer_item import structurer_item_agent
+from .structurer_recipe import structurer_recipe_agent
 from .sql_Item_reader import sql_item_reader
 from .sql_item_writer import sql_item_writer
 from .sql_recipe_reader import sql_recipe_reader

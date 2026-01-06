@@ -23,7 +23,7 @@ Este documento contém casos de teste para validar o funcionamento completo do s
 
 ## 1. Testes do Agente TRIVIAL
 
-### Teste 1.1 - Saudação Simples
+### Teste 1.1 - Saudação Simples - OK
 **Entrada:** `Oi, tudo bem?`
 
 **Fluxo Esperado:** Orchestrator → TRIVIAL
@@ -36,7 +36,7 @@ Como posso te ajudar hoje?
 
 ---
 
-### Teste 1.2 - Perguntas sobre Funcionalidades
+### Teste 1.2 - Perguntas sobre Funcionalidades - OK
 **Entrada:** `O que você pode fazer?`
 
 **Fluxo Esperado:** Orchestrator → TRIVIAL
@@ -57,7 +57,7 @@ Experimente perguntar: 'Quantas bananas tenho?' ou 'Posso fazer torta banoffee?'
 
 ---
 
-### Teste 1.3 - Bom dia
+### Teste 1.3 - Bom dia - OK
 **Entrada:** `Bom dia!`
 
 **Fluxo Esperado:** Orchestrator → TRIVIAL
@@ -71,8 +71,8 @@ Bom dia! Como posso ajudar você hoje? 😊
 
 ## 2. Testes do SQL_ORCHESTRATOR
 
-### Teste 2.1 - Roteamento para SQL_RECIPE
-**Entrada:** `Quais receitas tenho cadastradas?`
+### Teste 2.1 - Roteamento para SQL_RECIPE - OK
+**Entrada:** `Quais receitas tenho cadastradas?` 
 
 **Fluxo Esperado:** 
 - Orchestrator → SQL_ORCHESTRATOR
@@ -83,8 +83,8 @@ Bom dia! Como posso ajudar você hoje? 😊
 
 ---
 
-### Teste 2.2 - Roteamento para SQL_ITEM
-**Entrada:** `Quantas bananas tenho?`
+### Teste 2.2 - Roteamento para SQL_ITEM - OK
+**Entrada:** `Quantas bananas tenho?` 
 
 **Fluxo Esperado:**
 - Orchestrator → SQL_ORCHESTRATOR
@@ -95,8 +95,8 @@ Bom dia! Como posso ajudar você hoje? 😊
 
 ---
 
-### Teste 2.3 - Roteamento para SQL_TRANSACTION
-**Entrada:** `Mostre o histórico de compras`
+### Teste 2.3 - Roteamento para SQL_TRANSACTION - OK
+**Entrada:** `Mostre o histórico de compras` 
 
 **Fluxo Esperado:**
 - Orchestrator → SQL_ORCHESTRATOR
@@ -109,8 +109,8 @@ Bom dia! Como posso ajudar você hoje? 😊
 
 ## 3. Testes do RECIPE_READER
 
-### Teste 3.1 - Listar Todas as Receitas
-**Entrada:** `Quais receitas você tem cadastradas?`
+### Teste 3.1 - Listar Todas as Receitas - OK
+**Entrada:** `Quais receitas você tem cadastradas?` 
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_RECIPE → RECIPE_READER
 
@@ -128,8 +128,8 @@ Total: 4 receitas
 
 ---
 
-### Teste 3.2 - Buscar Receita Específica
-**Entrada:** `Como fazer torta banoffee?`
+### Teste 3.2 - Buscar Receita Específica - OK
+**Entrada:** `Como fazer torta banoffee?` 
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_RECIPE → RECIPE_READER
 
@@ -151,7 +151,7 @@ Modo de Preparo:
 
 ---
 
-### Teste 3.3 - Ver Ingredientes de Uma Receita
+### Teste 3.3 - Ver Ingredientes de Uma Receita - OK
 **Entrada:** `Quais ingredientes tem na torta banoffee?`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_RECIPE → RECIPE_READER
@@ -171,7 +171,7 @@ Ingredientes da Torta Banoffee:
 
 ---
 
-### Teste 3.4 - Verificar Disponibilidade (Tool check_recipe_availability)
+### Teste 3.4 - Verificar Disponibilidade (Tool check_recipe_availability) - OK
 **Entrada:** `Consigo fazer torta banoffee?`
 
 **Fluxo Esperado:** 
@@ -188,7 +188,7 @@ Ingredientes disponíveis:
 
 ---
 
-### Teste 3.5 - Verificar Disponibilidade com Falta de Ingredientes
+### Teste 3.5 - Verificar Disponibilidade com Falta de Ingredientes - OK
 **Entrada:** `Posso fazer risoto de camarão?`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_RECIPE → RECIPE_READER
@@ -215,7 +215,7 @@ Gostaria de saber mais sobre alguma dessas receitas?
 
 ---
 
-### Teste 3.6 - Buscar Receitas com Ingrediente Específico
+### Teste 3.6 - Buscar Receitas com Ingrediente Específico - OK
 **Entrada:** `Quais receitas usam banana?`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_RECIPE → RECIPE_READER
@@ -231,7 +231,7 @@ Receitas que contêm banana:
 
 ---
 
-### Teste 3.7 - Receita Não Encontrada
+### Teste 3.7 - Receita Não Encontrada - OK
 **Entrada:** `Como fazer bolo de chocolate?`
 
 **Fluxo Esperado:** 
@@ -245,7 +245,7 @@ Receitas que contêm banana:
 
 ## 4. Testes do ITEM_READER
 
-### Teste 4.1 - Consulta Simples de Quantidade
+### Teste 4.1 - Consulta Simples de Quantidade - OK
 **Entrada:** `Quantas bananas tenho?`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_ITEM → ITEM_READER
@@ -257,7 +257,7 @@ Receitas que contêm banana:
 
 ---
 
-### Teste 4.2 - Consulta de Preço
+### Teste 4.2 - Consulta de Preço - OK
 **Entrada:** `Qual o preço da banana?`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_ITEM → ITEM_READER
@@ -269,7 +269,7 @@ Banana nanica: R$ 0,50 por unidade
 
 ---
 
-### Teste 4.3 - Listar Todos os Itens
+### Teste 4.3 - Listar Todos os Itens - OK
 **Entrada:** `Liste tudo do estoque`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_ITEM → ITEM_READER
@@ -289,7 +289,7 @@ Banana nanica: R$ 0,50 por unidade
 
 ---
 
-### Teste 4.4 - Itens com Estoque Baixo
+### Teste 4.4 - Itens com Estoque Baixo - OK
 **Entrada:** `Quais itens têm menos de 5 unidades?`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_ITEM → ITEM_READER
@@ -307,7 +307,7 @@ Banana nanica: R$ 0,50 por unidade
 
 ---
 
-### Teste 4.5 - Itens Próximos do Vencimento
+### Teste 4.5 - Itens Próximos do Vencimento - OK
 **Entrada:** `Mostre itens que vencem nos próximos 7 dias`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_ITEM → ITEM_READER
@@ -337,7 +337,7 @@ Nenhum item vencido no estoque.
 
 ---
 
-### Teste 4.7 - Valor Total do Estoque
+### Teste 4.7 - Valor Total do Estoque - OK
 **Entrada:** `Quanto vale meu estoque?`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_ITEM → ITEM_READER
@@ -377,7 +377,7 @@ Item 'abacaxi' não encontrado no estoque.
 
 ---
 
-## 5. Testes do TRANSACTION_READER
+## 5. Testes do TRANSACTION_READER - OK
 
 ### Teste 5.1 - Histórico de Um Item Específico
 **Entrada:** `Mostre o histórico da banana`
@@ -425,7 +425,7 @@ DD/MM/YYYY - SAÍDA: uso em receita: pavê de banana
 
 ---
 
-### Teste 5.3 - Total Gasto em Compras
+### Teste 5.3 - Total Gasto em Compras - OK
 **Entrada:** `Quanto gastei em compras este mês?`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_TRANSACTION → TRANSACTION_READER
@@ -441,7 +441,7 @@ Detalhamento:
 
 ---
 
-### Teste 5.4 - Itens Mais Usados
+### Teste 5.4 - Itens Mais Usados - OK
 **Entrada:** `Quais ingredientes mais uso?`
 
 **Fluxo Esperado:** Orchestrator → SQL_ORCHESTRATOR → SQL_TRANSACTION → TRANSACTION_READER

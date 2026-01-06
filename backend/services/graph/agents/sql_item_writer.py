@@ -1,5 +1,6 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents.structured_output import ToolStrategy
+from langchain_community.agent_toolkits import create_sql_agent
 from langchain.agents import create_agent
 from ..utils import load_prompt
 from pydantic import BaseModel
@@ -14,14 +15,28 @@ from ..tools.sql import (
     get_expired_items_tool
 )
 
+from dotenv import load_dotenv
+from langchain_community.utilities import SQLDatabase
+import os
+
 load_dotenv()
+
+DB_USER = os.getenv("POSTGRES_USER")
+DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+DB_NAME = os.getenv("POSTGRES_DB")
+DB_HOST = os.getenv("POSTGRES_HOST")
+DB_PORT = os.getenv("POSTGRES_PORT")
+
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+db = SQLDatabase.from_uri(DATABASE_URL)
 
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0)
 
-sql_item_writer = create_agent(
-    model=llm,
-    system_prompt=load_prompt("sql_item_writer"),
-    tools=[
+
+sql_item_writer = create_sql_agent(
+    llm, db=db, verbose=True, agent_type="tool-calling",
+    handle_parsing_errors=True, prefix_prompt=load_prompt("sql_item_writer"),
+    extra_tools=[
         list_all_items_tool,
         find_item_by_name_tool,
         add_item_tool,
