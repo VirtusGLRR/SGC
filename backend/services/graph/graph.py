@@ -95,15 +95,24 @@ builder.add_conditional_edges(
     }
 )
 
+builder.add_conditional_edges(
+    "structurer_item",
+    lambda state: state['past_agent'],
+    {
+        "sql_item": "sql_item_writer",
+        "sql_item_writer": "sql_transaction_writer",
+        "structurer_item": "sql_item_writer"
+    }
+
+)
+
 builder.add_edge("structurer_recipe", "sql_recipe_writer")
-builder.add_edge("structurer_item", "sql_item_writer")
-builder.add_edge("structurer_item", "sql_transaction_writer")
+builder.add_edge("sql_item_writer", "structurer_item")
 
 builder.add_edge("sql_recipe_reader", "revisor")
 builder.add_edge("sql_item_reader", "revisor")
 builder.add_edge("sql_transaction_reader", "revisor")
 builder.add_edge("sql_recipe_writer", "revisor")
-builder.add_edge("sql_item_writer", "revisor")
 builder.add_edge("sql_transaction_writer", "revisor")
 
 builder.add_conditional_edges(

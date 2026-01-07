@@ -4,18 +4,21 @@ from ..state import AgentState
 import json
 
 def sql_item_writer_node(state : AgentState):
-    instruction_data = state['sql_item_instruction']
-
-    # Converter para JSON string para passar ao agente
-    if hasattr(instruction_data, 'model_dump'):
-        instruction_json = json.dumps(instruction_data.model_dump(), ensure_ascii=False, indent=2)
-    elif isinstance(instruction_data, list):
-        instruction_json = json.dumps([item.model_dump() if hasattr(item, 'model_dump') else item for item in instruction_data], ensure_ascii=False, indent=2)
+    if state['past_agent'] == 'sql_item':
+        full_request = state['query_sql']
     else:
-        instruction_json = json.dumps(instruction_data, ensure_ascii=False, indent=2)
+        instruction_data = state['sql_item_instruction']
 
-    # Adicionar histórico ao request
-    full_request = f"Processe os seguintes dados de itens:\n\n{instruction_json}"
+        # Converter para JSON string para passar ao agente
+        if hasattr(instruction_data, 'model_dump'):
+            instruction_json = json.dumps(instruction_data.model_dump(), ensure_ascii=False, indent=2)
+        elif isinstance(instruction_data, list):
+            instruction_json = json.dumps([item.model_dump() if hasattr(item, 'model_dump') else item for item in instruction_data], ensure_ascii=False, indent=2)
+        else:
+            instruction_json = json.dumps(instruction_data, ensure_ascii=False, indent=2)
+
+        # Adicionar histórico ao request
+        full_request = f"Processe os seguintes dados de itens:\n\n{instruction_json}"
 
     response = sql_item_writer.invoke(full_request)
 
@@ -44,5 +47,6 @@ def sql_item_writer_node(state : AgentState):
         sql_response = str(response)
 
     return {
-        'sql_response': [sql_response]
+        'sql_response': [sql_response],
+        'past_agent': 'sql_item_writer'
     }
