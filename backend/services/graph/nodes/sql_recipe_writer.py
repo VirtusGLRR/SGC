@@ -4,7 +4,7 @@ from ..state import AgentState
 import json
 
 def sql_recipe_writer_node(state : AgentState):
-    response = sql_recipe_writer.invoke(state['query_sql'])
+    response = sql_recipe_writer.invoke(state['sql_recipe_instruction'])
 
     if isinstance(response, dict):
         if 'output' in response:
@@ -24,5 +24,5 @@ def sql_recipe_writer_node(state : AgentState):
         sql_response = str(response)
 
     return {
-        'sql_response': sql_response
+        'sql_response': [sql_response]
     }

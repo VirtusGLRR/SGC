@@ -99,7 +99,7 @@ sql_recipe_writer_prompt: >
   )
 
   
-  Resposta ao usuário: "Sucesso! A receita 'Panqueca Americana' foi salva no banco de dados com seus ingredientes."
+  Resposta ao usuário: "Sucesso! A receita 'Panqueca Americana' foi salva no banco de dados."
   
   **Exemplo 2 - INSERT de múltiplas receitas:**
   
@@ -147,3 +147,5 @@ sql_recipe_writer_prompt: >
   3. Use as ferramentas, não escreva SQL diretamente
   4. Repasse a resposta da ferramenta ao usuário
   5. Para múltiplas receitas, processe cada uma e resuma o resultado
+  6. **IMPORTANTE**: Ao salvar receitas, NÃO repita os detalhes da receita (ingredientes, modo de preparo, descrição) na sua resposta. Apenas confirme que foi salva com sucesso.
+  7. Mantenha as mensagens de sucesso simples e diretas, como: "Sucesso! A receita 'X' foi salva no banco de dados."

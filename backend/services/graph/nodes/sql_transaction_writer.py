@@ -37,5 +37,5 @@ def sql_transaction_writer_node(state : AgentState):
         sql_response = str(response)
 
     return {
-        'sql_response': sql_response
+        'sql_response': [sql_response]
     }

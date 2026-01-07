@@ -17,11 +17,7 @@ def sql_item_writer_node(state : AgentState):
     # Adicionar histórico ao request
     full_request = f"Processe os seguintes dados de itens:\n\n{instruction_json}"
 
-    response = sql_item_writer.invoke({
-        "messages": [
-            HumanMessage(content=full_request)
-        ]
-    })
+    response = sql_item_writer.invoke(full_request)
 
     if isinstance(response, dict):
         # Se for dict (AgentExecutor/create_sql_agent)
@@ -48,5 +44,5 @@ def sql_item_writer_node(state : AgentState):
         sql_response = str(response)
 
     return {
-        'sql_response': sql_response
+        'sql_response': [sql_response]
     }

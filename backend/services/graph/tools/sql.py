@@ -465,7 +465,6 @@ def find_item_by_name_tool(item_name: str) -> str:
     finally:
         db.close()
 
-
 @tool
 def add_item_tool(
         name: str,
@@ -478,15 +477,11 @@ def add_item_tool(
 ) -> dict:
     """
     Adiciona um novo item ao estoque.
-    Retorna dict com dados para o TRANSACTION_WRITER.
-
-    IMPORTANTE: Verifica duplicatas por NOME + UNIDADE.
-    Se existir item com mesmo nome mas unidade diferente, permite criar.
-    Se existir item com mesmo nome E unidade, solicita confirmação do usuário.
+    Se o item já existe (mesmo nome + mesma unidade), ATUALIZA automaticamente somando a quantidade.
 
     Args:
         name: Nome do item
-        amount: Quantidade
+        amount: Quantidade a adicionar
         measure_unity: Unidade de medida
         price: Preço (opcional)
         price_unit: Unidade do preço (opcional)
@@ -494,7 +489,7 @@ def add_item_tool(
         expiration_date: Data de validade 'YYYY-MM-DD' (opcional)
 
     Returns:
-        Dict com success, message, item_id e dados para transação
+        Dict com success, action ("created" ou "updated"), message, item_id e dados para transação
     """
     from controllers import ItemController
     from decimal import Decimal
@@ -510,41 +505,46 @@ def add_item_tool(
         ).first()
 
         if exact_match:
-            # CONVERTER DECIMAL PARA FLOAT para evitar erros de tipo
+            # Item duplicado encontrado → ATUALIZAR AUTOMATICAMENTE
             current_amount = float(exact_match.amount)
             new_total = current_amount + amount
             current_price = float(exact_match.price) if exact_match.price else 0.0
 
-            # Encontrou item EXATO (mesmo nome + mesma unidade)
+            # Preparar dados de atualização
+            update_data = {
+                "name": exact_match.name,
+                "amount": new_total,
+                "measure_unity": exact_match.measure_unity,
+                "price": price if price > 0 else current_price,
+                "price_unit": exact_match.price_unit,
+                "description": exact_match.description or description,
+                "update_at": datetime.now()
+            }
+
+            # Atualizar validade se fornecida
+            if expiration_date:
+                try:
+                    update_data["expiration_date"] = datetime.strptime(expiration_date, '%Y-%m-%d')
+                except:
+                    pass
+            elif exact_match.expiration_date:
+                update_data["expiration_date"] = exact_match.expiration_date
+
+            # Executar update
+            request = ItemRequest(**update_data)
+            ItemController.update(exact_match.id, request, db=db)
+
             return {
-                "success": False,
-                "action_required": "confirm_or_update",
-                "message": (
-                    f"⚠️ Item '{name}' em {measure_unity} já existe no estoque com {current_amount}{measure_unity}.\n\n"
-                    f"Você deseja:\n"
-                    f"1. **Atualizar** (somar +{amount}{measure_unity}, ficando {new_total}{measure_unity} total)\n"
-                    f"2. **Criar novo** item separado\n"
-                    f"3. **Cancelar** operação\n\n"
-                    f"Responda com o número da opção."
-                ),
-                "existing_item": {
-                    "id": exact_match.id,
-                    "name": exact_match.name,
-                    "amount": current_amount,
-                    "measure_unity": exact_match.measure_unity,
-                    "price": current_price,
-                    "expiration_date": exact_match.expiration_date.strftime(
-                        '%Y-%m-%d') if exact_match.expiration_date else None
-                },
-                "new_data": {
-                    "name": name,
-                    "amount": amount,
-                    "measure_unity": measure_unity,
-                    "price": price,
-                    "price_unit": price_unit,
-                    "description": description,
-                    "expiration_date": expiration_date
-                }
+                "success": True,
+                "action": "updated",
+                "message": f"✓ Item '{name}' atualizado! Quantidade: {current_amount}{measure_unity} → {new_total}{measure_unity} (+{amount}{measure_unity}).",
+                "item_id": exact_match.id,
+                "item_name": name,
+                "amount": amount,  # Quantidade adicionada
+                "total_amount": new_total,  # Quantidade total após update
+                "measure_unity": measure_unity,
+                "price": price if price > 0 else current_price,
+                "price_unit": exact_match.price_unit
             }
 
         # ========================================
@@ -559,8 +559,6 @@ def add_item_tool(
             # Existe item(ns) com mesmo nome mas unidade(s) diferente(s)
             other_units = [item.measure_unity for item in same_name_items]
             units_text = ", ".join(other_units)
-
-            # Informar ao usuário mas PERMITIR criar
             info_message = (
                 f"ℹ️ Nota: Já existe(m) item(ns) '{name}' em outra(s) unidade(s): {units_text}. "
                 f"Criando novo item em {measure_unity}."
@@ -569,8 +567,6 @@ def add_item_tool(
         # ========================================
         # 3. CRIAR NOVO ITEM (não há duplicata exata)
         # ========================================
-
-        # Preparar dados
         item_data = {
             "name": name,
             "amount": amount,
@@ -602,6 +598,7 @@ def add_item_tool(
 
         return {
             "success": True,
+            "action": "created",
             "message": success_msg,
             "item_id": result.id,
             "item_name": name,
@@ -614,6 +611,7 @@ def add_item_tool(
     except Exception as e:
         return {
             "success": False,
+            "action": "error",
             "message": f"Erro ao adicionar item: {str(e)}"
         }
     finally:
