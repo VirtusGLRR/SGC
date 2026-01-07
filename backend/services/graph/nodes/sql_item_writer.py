@@ -4,18 +4,6 @@ from ..state import AgentState
 import json
 
 def sql_item_writer_node(state : AgentState):
-    history = state['messages']
-
-    context_messages = []
-    for msg in history:
-        if isinstance(msg, HumanMessage):
-            context_messages.append(f"Usuário: {msg.content}")
-        elif isinstance(msg, AIMessage):
-            context_messages.append(f"Assistente: {msg.content}")
-
-    full_context = "\n\n".join(context_messages)
-
-    # Converter os dados estruturados em mensagem
     instruction_data = state['sql_item_instruction']
 
     # Converter para JSON string para passar ao agente
@@ -27,12 +15,16 @@ def sql_item_writer_node(state : AgentState):
         instruction_json = json.dumps(instruction_data, ensure_ascii=False, indent=2)
 
     # Adicionar histórico ao request
-    full_request = f"Histórico da conversa:\n\n{full_context}\n\nProcesse os seguintes dados de itens:\n\n{instruction_json}"
+    full_request = f"Processe os seguintes dados de itens:\n\n{instruction_json}"
 
-    response = sql_item_writer.invoke({"input": full_request})
-
+    response = sql_item_writer.invoke({
+        "messages": [
+            HumanMessage(content=full_request)
+        ]
+    })
 
     if isinstance(response, dict):
+        # Se for dict (AgentExecutor/create_sql_agent)
         if 'output' in response:
             if isinstance(response['output'], list) and len(response['output']) > 0:
                 parts = []
@@ -46,7 +38,13 @@ def sql_item_writer_node(state : AgentState):
                 sql_response = response['output']
         else:
             sql_response = str(response)
+
+    elif isinstance(response, str):
+        # Se for string (create_agent) - ESTE É SEU CASO
+        sql_response = response
+
     else:
+        # Fallback
         sql_response = str(response)
 
     return {

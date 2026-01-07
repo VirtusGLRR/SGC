@@ -33,10 +33,24 @@ db = SQLDatabase.from_uri(DATABASE_URL)
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0)
 
 
-sql_item_writer = create_sql_agent(
-    llm, db=db, verbose=True, agent_type="tool-calling",
-    handle_parsing_errors=True, prefix_prompt=load_prompt("sql_item_writer"),
-    extra_tools=[
+# sql_item_writer = create_sql_agent(
+#     llm, db=db, verbose=True, agent_type="tool-calling",
+#     handle_parsing_errors=True, prefix_prompt=load_prompt("sql_item_writer"),
+#     extra_tools=[
+#         list_all_items_tool,
+#         find_item_by_name_tool,
+#         add_item_tool,
+#         update_item_tool,
+#         delete_item_tool,
+#         get_low_stock_items_tool,
+#         get_expired_items_tool
+#     ]
+# )
+
+sql_item_writer = create_agent(
+    model=llm,
+    system_prompt=load_prompt("sql_item_writer"),
+    tools=[
         list_all_items_tool,
         find_item_by_name_tool,
         add_item_tool,
@@ -45,4 +59,5 @@ sql_item_writer = create_sql_agent(
         get_low_stock_items_tool,
         get_expired_items_tool
     ]
+
 )

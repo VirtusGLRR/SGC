@@ -23,5 +23,6 @@ def sql_orchestrator_node(state : AgentState):
     return {
         'next_agent': response['structured_response'].next_agent,
         'explanation': response['structured_response'].explanation,
+        'query_sql': response['structured_response'].query_sql,
         'messages': [HumanMessage(content=state['user_input'])]
     }

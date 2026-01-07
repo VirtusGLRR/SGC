@@ -468,18 +468,22 @@ def find_item_by_name_tool(item_name: str) -> str:
 
 @tool
 def add_item_tool(
-    name: str,
-    amount: float,
-    measure_unity: str,
-    price: float = 0.0,
-    price_unit: str = "unidade",
-    description: str = "",
-    expiration_date: str = None
+        name: str,
+        amount: float,
+        measure_unity: str,
+        price: float = 0.0,
+        price_unit: str = "unidade",
+        description: str = "",
+        expiration_date: str = None
 ) -> dict:
     """
     Adiciona um novo item ao estoque.
     Retorna dict com dados para o TRANSACTION_WRITER.
-    
+
+    IMPORTANTE: Verifica duplicatas por NOME + UNIDADE.
+    Se existir item com mesmo nome mas unidade diferente, permite criar.
+    Se existir item com mesmo nome E unidade, solicita confirmação do usuário.
+
     Args:
         name: Nome do item
         amount: Quantidade
@@ -488,55 +492,125 @@ def add_item_tool(
         price_unit: Unidade do preço (opcional)
         description: Descrição (opcional)
         expiration_date: Data de validade 'YYYY-MM-DD' (opcional)
-    
+
     Returns:
         Dict com success, message, item_id e dados para transação
     """
     from controllers import ItemController
+    from decimal import Decimal
 
     db = SessionLocal()
     try:
-        # Verificar se item já existe
-        existing = db.query(Item).filter(
-            func.lower(Item.name) == name.lower()
+        # ========================================
+        # 1. VERIFICAR DUPLICATA EXATA (nome + unidade)
+        # ========================================
+        exact_match = db.query(Item).filter(
+            func.lower(Item.name) == name.lower(),
+            func.lower(Item.measure_unity) == measure_unity.lower()
         ).first()
-        
-        if existing:
+
+        if exact_match:
+            # CONVERTER DECIMAL PARA FLOAT para evitar erros de tipo
+            current_amount = float(exact_match.amount)
+            new_total = current_amount + amount
+            current_price = float(exact_match.price) if exact_match.price else 0.0
+
+            # Encontrou item EXATO (mesmo nome + mesma unidade)
             return {
                 "success": False,
-                "message": f"Item '{name}' já existe no estoque. Use update para modificar."
+                "action_required": "confirm_or_update",
+                "message": (
+                    f"⚠️ Item '{name}' em {measure_unity} já existe no estoque com {current_amount}{measure_unity}.\n\n"
+                    f"Você deseja:\n"
+                    f"1. **Atualizar** (somar +{amount}{measure_unity}, ficando {new_total}{measure_unity} total)\n"
+                    f"2. **Criar novo** item separado\n"
+                    f"3. **Cancelar** operação\n\n"
+                    f"Responda com o número da opção."
+                ),
+                "existing_item": {
+                    "id": exact_match.id,
+                    "name": exact_match.name,
+                    "amount": current_amount,
+                    "measure_unity": exact_match.measure_unity,
+                    "price": current_price,
+                    "expiration_date": exact_match.expiration_date.strftime(
+                        '%Y-%m-%d') if exact_match.expiration_date else None
+                },
+                "new_data": {
+                    "name": name,
+                    "amount": amount,
+                    "measure_unity": measure_unity,
+                    "price": price,
+                    "price_unit": price_unit,
+                    "description": description,
+                    "expiration_date": expiration_date
+                }
             }
-        
+
+        # ========================================
+        # 2. VERIFICAR SE EXISTE APENAS O NOME (unidade diferente)
+        # ========================================
+        same_name_items = db.query(Item).filter(
+            func.lower(Item.name) == name.lower()
+        ).all()
+
+        info_message = None
+        if same_name_items:
+            # Existe item(ns) com mesmo nome mas unidade(s) diferente(s)
+            other_units = [item.measure_unity for item in same_name_items]
+            units_text = ", ".join(other_units)
+
+            # Informar ao usuário mas PERMITIR criar
+            info_message = (
+                f"ℹ️ Nota: Já existe(m) item(ns) '{name}' em outra(s) unidade(s): {units_text}. "
+                f"Criando novo item em {measure_unity}."
+            )
+
+        # ========================================
+        # 3. CRIAR NOVO ITEM (não há duplicata exata)
+        # ========================================
+
         # Preparar dados
         item_data = {
             "name": name,
             "amount": amount,
             "measure_unity": measure_unity,
             "price": price,
+            "price_unit": price_unit,
             "description": description,
             "create_at": datetime.now()
         }
-        
+
         if expiration_date:
             try:
                 item_data["expiration_date"] = datetime.strptime(expiration_date, '%Y-%m-%d')
             except:
                 pass
-        
+
         # Criar item usando controller
         request = ItemRequest(**item_data)
         result = ItemController.create(request, db=db)
-        
+
+        # Montar mensagem de sucesso
+        success_msg = f"✓ Item '{name}' adicionado ao estoque: {amount}{measure_unity}"
+        if price > 0:
+            success_msg += f" (R${price:.2f} por {price_unit})"
+        success_msg += "."
+
+        if info_message:
+            success_msg = f"{info_message}\n{success_msg}"
+
         return {
             "success": True,
-            "message": f"Sucesso! Item '{name}' adicionado ao estoque: {amount}{measure_unity}.",
+            "message": success_msg,
             "item_id": result.id,
             "item_name": name,
             "amount": amount,
             "measure_unity": measure_unity,
-            "price": price
+            "price": price,
+            "price_unit": price_unit
         }
-    
+
     except Exception as e:
         return {
             "success": False,
@@ -548,47 +622,89 @@ def add_item_tool(
 
 @tool
 def update_item_tool(
-    item_name: str,
-    amount_change: float = None,
-    new_amount: float = None,
-    new_price: float = None,
-    new_expiration_date: str = None,
-    operation_type: str = "uso"
+        item_name: str,
+        measure_unity: str = None,  # ← NOVO parâmetro
+        amount_change: float = None,
+        new_amount: float = None,
+        new_price: float = None,
+        new_expiration_date: str = None,
+        operation_type: str = "uso"
 ) -> dict:
     """
     Atualiza um item existente.
     Retorna dict com dados para o TRANSACTION_WRITER.
-    
+
     Args:
         item_name: Nome do item
+        measure_unity: Unidade de medida (para identificar qual item quando há duplicatas)
         amount_change: Mudança relativa na quantidade
         new_amount: Nova quantidade absoluta
         new_price: Novo preço
         new_expiration_date: Nova validade 'YYYY-MM-DD'
         operation_type: 'uso', 'venda', 'ajuste', 'compra'
-    
+
     Returns:
         Dict com success, message e dados para transação
     """
     from controllers import ItemController
+    from decimal import Decimal
 
     db = SessionLocal()
     try:
-        # Buscar item
-        item = db.query(Item).filter(
-            func.lower(Item.name).like(f'%{item_name.lower()}%')
-        ).first()
-        
-        if not item:
-            return {
-                "success": False,
-                "message": f"Item '{item_name}' não encontrado."
-            }
-        
+        # ========================================
+        # BUSCAR ITEM COM MATCH EXATO + UNIDADE
+        # ========================================
+
+        if measure_unity:
+            # Se unidade fornecida, busca EXATA (nome + unidade)
+            item = db.query(Item).filter(
+                func.lower(Item.name) == item_name.lower(),  # ← Match EXATO
+                func.lower(Item.measure_unity) == measure_unity.lower()
+            ).first()
+
+            if not item:
+                return {
+                    "success": False,
+                    "message": f"Item '{item_name}' em {measure_unity} não encontrado."
+                }
+        else:
+            # Se unidade NÃO fornecida, busca por nome EXATO
+            items = db.query(Item).filter(
+                func.lower(Item.name) == item_name.lower()  # ← Match EXATO
+            ).all()
+
+            if not items:
+                return {
+                    "success": False,
+                    "message": f"Item '{item_name}' não encontrado."
+                }
+
+            if len(items) > 1:
+                # Múltiplos itens com mesmo nome
+                units = [f"{i.name} ({i.measure_unity})" for i in items]
+                return {
+                    "success": False,
+                    "message": f"Múltiplos itens encontrados: {', '.join(units)}. Por favor, especifique a unidade de medida.",
+                    "multiple_items": [
+                        {
+                            "id": i.id,
+                            "name": i.name,
+                            "measure_unity": i.measure_unity,
+                            "amount": float(i.amount)
+                        } for i in items
+                    ]
+                }
+
+            item = items[0]
+
+        # ========================================
+        # ATUALIZAR ITEM
+        # ========================================
+
         item_id = item.id
         old_amount = float(item.amount)
         measure_unity = item.measure_unity
-        
+
         result = {
             "success": True,
             "item_id": item_id,
@@ -596,7 +712,7 @@ def update_item_tool(
             "measure_unity": measure_unity,
             "operation": "update"
         }
-        
+
         # Calcular nova quantidade
         if new_amount is not None:
             amount_diff = new_amount - old_amount
@@ -607,24 +723,25 @@ def update_item_tool(
         else:
             amount_diff = 0
             final_amount = old_amount
-        
+
         # Validar quantidade negativa
         if final_amount < 0:
             return {
                 "success": False,
                 "message": f"Operação resultaria em quantidade negativa. Quantidade atual: {old_amount}{measure_unity}."
             }
-        
+
         # Preparar dados de atualização
         update_data = {
             "name": item.name,
             "amount": final_amount,
             "measure_unity": item.measure_unity,
-            "price": new_price if new_price is not None else item.price,
+            "price": new_price if new_price is not None else (float(item.price) if item.price else 0.0),
+            "price_unit": item.price_unit,
             "description": item.description,
             "update_at": datetime.now()
         }
-        
+
         if new_expiration_date:
             try:
                 update_data["expiration_date"] = datetime.strptime(new_expiration_date, '%Y-%m-%d')
@@ -632,39 +749,44 @@ def update_item_tool(
                 pass
         elif item.expiration_date:
             update_data["expiration_date"] = item.expiration_date
-        
+
         # Atualizar
         request = ItemRequest(**update_data)
         ItemController.update(item_id, request, db=db)
-        
+
         result["amount_changed"] = amount_diff
         result["new_amount"] = final_amount
         result["old_amount"] = old_amount
-        
+
         # Montar descrição da transação
         if operation_type == "uso":
             result["transaction_type"] = "uso"
             result["transaction_description"] = f"Uso de {item.name} - {abs(amount_diff)}{measure_unity}"
-            result["message"] = f"Sucesso! {item.name} atualizado: {final_amount}{measure_unity} (usou {abs(amount_diff)}{measure_unity})."
-        
+            result[
+                "message"] = f"Sucesso! {item.name} atualizado: {final_amount}{measure_unity} (usou {abs(amount_diff)}{measure_unity})."
+
         elif operation_type == "venda":
             result["transaction_type"] = "venda"
             result["transaction_description"] = f"Venda de {item.name} - {abs(amount_diff)}{measure_unity}"
-            result["message"] = f"Sucesso! {item.name} atualizado: {final_amount}{measure_unity} (vendeu {abs(amount_diff)}{measure_unity})."
-        
+            result[
+                "message"] = f"Sucesso! {item.name} atualizado: {final_amount}{measure_unity} (vendeu {abs(amount_diff)}{measure_unity})."
+
         elif operation_type == "ajuste":
             result["transaction_type"] = "ajuste"
             sinal = "+" if amount_diff > 0 else ""
-            result["transaction_description"] = f"Ajuste de estoque de {item.name}: de {old_amount}{measure_unity} para {final_amount}{measure_unity} ({sinal}{amount_diff}{measure_unity})"
-            result["message"] = f"Sucesso! {item.name} ajustado: {final_amount}{measure_unity} ({sinal}{amount_diff}{measure_unity})."
-        
+            result[
+                "transaction_description"] = f"Ajuste de estoque de {item.name}: de {old_amount}{measure_unity} para {final_amount}{measure_unity} ({sinal}{amount_diff}{measure_unity})"
+            result[
+                "message"] = f"Sucesso! {item.name} ajustado: {final_amount}{measure_unity} ({sinal}{amount_diff}{measure_unity})."
+
         elif operation_type == "compra":
             result["transaction_type"] = "compra"
             result["transaction_description"] = f"Compra adicional de {item.name} - {amount_diff}{measure_unity}"
-            result["message"] = f"Sucesso! {item.name} atualizado: {final_amount}{measure_unity} (adicionou {amount_diff}{measure_unity})."
-        
+            result[
+                "message"] = f"Sucesso! {item.name} atualizado: {final_amount}{measure_unity} (adicionou {amount_diff}{measure_unity})."
+
         return result
-    
+
     except Exception as e:
         return {
             "success": False,

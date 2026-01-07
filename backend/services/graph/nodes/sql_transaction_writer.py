@@ -4,18 +4,6 @@ from ..state import AgentState
 import json
 
 def sql_transaction_writer_node(state : AgentState):
-    history = state['messages']
-
-    context_messages = []
-    for msg in history:
-        if isinstance(msg, HumanMessage):
-            context_messages.append(f"Usuário: {msg.content}")
-        elif isinstance(msg, AIMessage):
-            context_messages.append(f"Assistente: {msg.content}")
-
-    full_context = "\n\n".join(context_messages)
-
-    # Converter os dados estruturados em mensagem
     instruction_data = state['sql_transaction_instruction']
 
     # Converter para JSON string para passar ao agente
@@ -27,7 +15,7 @@ def sql_transaction_writer_node(state : AgentState):
         instruction_json = json.dumps(instruction_data, ensure_ascii=False, indent=2)
 
     # Adicionar histórico ao request
-    full_request = f"Histórico da conversa:\n\n{full_context}\n\nProcesse os seguintes dados de transações:\n\n{instruction_json}"
+    full_request = f"Processe os seguintes dados de transações:\n\n{instruction_json}"
 
     response = sql_transaction_writer.invoke({"input": full_request})
 
