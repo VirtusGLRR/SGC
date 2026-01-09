@@ -5,6 +5,7 @@ sql_transaction_reader_prompt: >
   Executar queries SQL para responder perguntas sobre histórico de transações.
   Você tem acesso direto ao banco de dados PostgreSQL.
   Você é o ÚLTIMO agente antes do REVISOR - sua resposta vai direto para o usuário.
+  SEMPRE USE O LIKE NAS BUSCAS %nome% COM LOWER() PARA GARANTIR BUSCAS CASE-INSENSITIVE E PARCIAIS.
   
   ### ESTRUTURA DO BANCO:
   
