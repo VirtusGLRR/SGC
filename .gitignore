@@ -8,4 +8,7 @@ __pycache__/
 **checkpoints.db
 **test.db
 **/context
+**checkpoints.db-shm
+**checkpoints.db-wal
+**.vite/
 
