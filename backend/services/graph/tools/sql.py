@@ -413,18 +413,23 @@ def list_all_items_tool() -> str:
 def find_item_by_name_tool(item_name: str) -> str:
     """
     Busca item(ns) por nome e retorna detalhes.
-    
+    Usa LIKE com wildcard para busca parcial e case-insensitive.
+
     Args:
         item_name: Nome ou parte do nome do item
-    
+
     Returns:
         String com detalhes do(s) item(ns)
     """
     from controllers import ItemController
+    from sqlalchemy import func
 
     db = SessionLocal()
     try:
-        items = ItemController.find_by_name(item_name, db=db)
+        # Busca usando LIKE com % nos dois lados e LOWER para case-insensitive
+        items = db.query(Item).filter(
+            func.lower(Item.name).like(f"%{item_name.lower()}%")
+        ).all()
         
         if not items:
             return f"Item '{item_name}' não encontrado no estoque."

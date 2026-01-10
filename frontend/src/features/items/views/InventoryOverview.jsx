@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { MetricCard } from '../../../components/MetricCard';
 import { ItemsTable } from '../components/ItemsTable';
 import { ItemFormModal } from '../components/ItemFormModal';
@@ -9,7 +9,7 @@ import './InventoryOverview.css';
 /**
  * Tela Principal do Inventory Overview
  */
-export const InventoryOverview = () => {
+export const InventoryOverview = forwardRef((props, ref) => {
   const { items, loading, fetchItems, deleteItem, createItem, updateItem } = useItems();
   const { summary, fetchSummary } = useInventorySummary();
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,6 +18,7 @@ export const InventoryOverview = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const searchTimeoutRef = useRef(null);
 
   useEffect(() => {
     loadData();
@@ -34,17 +35,34 @@ export const InventoryOverview = () => {
     }
   };
 
-  const handleSearch = async (e) => {
+  // Expõe o método loadData para componentes pais via ref
+  useImperativeHandle(ref, () => ({
+    loadData
+  }));
+
+  const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
     
+    // Cancela o timeout anterior se existir (debounce)
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
     // Busca após 500ms de inatividade
-    setTimeout(() => {
-      if (value === searchTerm) {
-        fetchItems(value || null);
-      }
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchItems(value || null);
     }, 500);
   };
+
+  // Limpa o timeout quando o componente desmontar
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleDelete = async (id) => {
     const item = items.find(i => i.id === id);
@@ -148,7 +166,7 @@ export const InventoryOverview = () => {
         <MetricCard
           icon="$"
           title="Total Inventory Value"
-          value={`R$ ${(summary?.total_value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+          value={`R$ ${(summary?.total_inventory_value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
           trend="up"
           trendValue="+8.5%"
           type="success"
@@ -163,7 +181,7 @@ export const InventoryOverview = () => {
         <MetricCard
           icon="⚠️"
           title="Out of Stock"
-          value={summary?.out_of_stock_count || 0}
+          value={summary?.items_out_of_stock || 0}
           subtitle="Critical"
           type="danger"
         />
@@ -218,19 +236,11 @@ export const InventoryOverview = () => {
           loading={loading}
         />
 
-        {/* Pagination */}
         {filteredItems.length > 0 && (
           <div className="pagination">
             <span className="pagination__info">
               Showing {filteredItems.length} of {summary?.total_items || 0} items
             </span>
-            <div className="pagination__controls">
-              <button className="pagination__btn">Previous</button>
-              <button className="pagination__btn pagination__btn--active">1</button>
-              <button className="pagination__btn">2</button>
-              <button className="pagination__btn">3</button>
-              <button className="pagination__btn">Next</button>
-            </div>
           </div>
         )}
       </div>
@@ -254,4 +264,7 @@ export const InventoryOverview = () => {
       />
     </div>
   );
-};
+});
+
+InventoryOverview.displayName = 'InventoryOverview';
+
