@@ -92,8 +92,15 @@ export const useInventorySummary = () => {
     setError(null);
     try {
       const data = await itemsApi.getInventorySummary();
-      setSummary(data);
-      return data;
+      const expiring = await itemsApi.getExpiringItems();
+      
+      const summary = {
+        ...data,
+        expiring_soon_count: expiring.length,
+      };
+
+      setSummary(summary);
+      return summary;
     } catch (err) {
       setError(err.response?.data?.detail || 'Erro ao buscar resumo');
       throw err;
