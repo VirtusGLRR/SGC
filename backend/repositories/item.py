@@ -81,6 +81,20 @@ class ItemRepository:
         ).all()
 
     @staticmethod
+    def find_total_item_value_by_id(id: int, db: Session) -> Decimal:
+        """Retorna o valor total do estoque de um item específico, considerando as unidades"""
+        item = db.query(Item).filter(Item.id == id).first()
+        
+        total = calculate_item_total_value(
+                item.amount,
+                item.price,
+                item.measure_unity,
+                item.price_unit
+            )
+        
+        return total
+
+    @staticmethod
     def find_total_inventory_value(db: Session) -> Decimal:
         """Retorna o valor total do estoque atual considerando conversão de unidades"""
         items = db.query(Item).all()

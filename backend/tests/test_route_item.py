@@ -332,3 +332,45 @@ def test_get_items_by_value_ranking(client):
     assert len(top_items) >= 3
     assert "total_value" in top_items[0]
     assert top_items[0]["total_value"] >= top_items[1]["total_value"]
+
+
+@pytest.mark.parametrize(
+    "payload,expected_total",
+    [
+        ({"name": "Notebook", "price": 1500.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 10}, 15000.0),
+        ({"name": "Mouse", "price": 50.0, "price_unit": "unidade", "measure_unity": "unidade", "amount": 5}, 250.0),
+    ]
+)
+def test_get_total_item_value(client, payload, expected_total):
+    response = client.post("/api/items", json=payload)
+    assert response.status_code == 201
+
+    created_item = ItemResponse.model_validate(response.json())
+
+    response = client.get(f"/items/total-value/{created_item.id}")
+    assert response.status_code == 200
+
+    result = response.json()
+    assert "total_value" in result
+    assert result["total_value"] == expected_total
+
+
+def test_get_total_item_value_not_found(client):
+    response = client.get("/items/total-value/999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Item não encontrado"
+
+
+def test_get_total_item_value_with_zero_amount(client):
+    payload = {"name": "Leite", "price": 5.00, "price_unit": "litro", "measure_unity": "mililitro", "amount": 0}
+    response = client.post("/api/items", json=payload)
+    assert response.status_code == 201
+
+    created_item = ItemResponse.model_validate(response.json())
+
+    response = client.get(f"/items/total-value/{created_item.id}")
+    assert response.status_code == 200
+
+    result = response.json()
+    assert "total_value" in result
+    assert result["total_value"] == 0.0
