@@ -16,6 +16,24 @@ export const chatbotApi = {
   },
 
   /**
+   * POST /bot/image_message
+   * Envia uma mensagem com imagem para o chatbot
+   */
+  sendImageMessage: async (messageData) => {
+    const response = await api.post('/bot/image_message', messageData);
+    return response.data;
+  },
+
+  /**
+   * POST /bot/audio_message
+   * Envia uma mensagem com áudio para o chatbot
+   */
+  sendAudioMessage: async (messageData) => {
+    const response = await api.post('/bot/audio_message', messageData);
+    return response.data;
+  },
+
+  /**
    * GET /bot/history
    * Retorna o histórico de conversas do chatbot
    */
