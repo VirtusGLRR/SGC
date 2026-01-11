@@ -11,11 +11,7 @@ def context():
         "payload": {},
         "response": None
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 916965aa29b4ae0f3c1ce3f18e2295e9024a1dba
 @given('o usuário está autenticado no sistema')
 def usuario_autenticado():
     pass
@@ -72,17 +68,11 @@ def verifica_mensagem(context, mensagem):
         if "cadastrado com sucesso" in mensagem:
             assert response_json["name"] == context["payload"]["name"]
             return
-<<<<<<< HEAD
-=======
             
->>>>>>> 916965aa29b4ae0f3c1ce3f18e2295e9024a1dba
     detail = response_json.get("detail", "")
     if isinstance(detail, list):
         detail = str(detail)
-<<<<<<< HEAD
-=======
     
->>>>>>> 916965aa29b4ae0f3c1ce3f18e2295e9024a1dba
     assert mensagem.lower() in str(detail).lower()
 
 @then(parsers.parse('o produto "{nome_produto}" deve aparecer na lista de produtos'))
@@ -91,7 +81,7 @@ def verifica_lista(client, nome_produto):
     items = response.json()
     item_encontrado = any(i['name'] == nome_produto for i in items)
     assert item_encontrado is True
-<<<<<<< HEAD
+
 
 @given(parsers.parse('que existe um item "{nome}" cadastrado com {qtd} unidades'))
 def criar_item_no_banco(client, context, nome, qtd):
@@ -140,4 +130,3 @@ def verifica_lista_nao_contem(client, nome_produto):
     items = response.json()
     item_encontrado = any(i['name'] == nome_produto for i in items)
     assert item_encontrado is False
-
