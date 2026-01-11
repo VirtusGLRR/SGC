@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { AppLayout } from '../components/AppLayout';
+import { AppLayout } from '../components/index.js';
 import { InventoryOverview } from '../features/items/views/InventoryOverview';
 
 /**
@@ -16,7 +16,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'items',
-        element: <InventoryOverview />
+        element: <InventoryOverview/>
       },
       {
         path: 'recipes',

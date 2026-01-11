@@ -5,6 +5,8 @@ import { ChatbotWidget } from '../../features/chatbot/components/chatbot-widget/
 import './AppLayout.css';
 
 export const AppLayout = () => {
+  const inventoryRef = useRef(null);
+
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const contentRef = useRef(null);
 
@@ -13,7 +15,10 @@ export const AppLayout = () => {
   };
 
   const handleChatbotResponse = () => {
-    console.log('Chatbot recebeu resposta - views podem atualizar dados');
+    // Chama o método loadData do InventoryOverview após resposta do chatbot
+    if (inventoryRef.current && inventoryRef.current.loadData) {
+        inventoryRef.current.loadData();
+    }
   };
 
   const menuItems = [
@@ -33,7 +38,7 @@ export const AppLayout = () => {
         className={`app-layout__content ${isSidebarCollapsed ? 'app-layout__content--expanded' : ''}`}
         ref={contentRef}
       >
-        <Outlet context={{ contentRef, onRefresh: handleChatbotResponse }} />
+        <Outlet context={{ inventoryRef, onRefresh: handleChatbotResponse }} />
       </main>
       <ChatbotWidget onResponseReceived={handleChatbotResponse} />
     </div>
