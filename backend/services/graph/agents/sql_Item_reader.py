@@ -4,6 +4,10 @@ from langchain_community.utilities import SQLDatabase
 from ..utils import load_prompt
 from dotenv import load_dotenv
 import os
+from ..tools.sql import (
+    list_all_items_tool,
+    find_item_by_name_tool
+)
 
 load_dotenv()
 
@@ -23,7 +27,12 @@ db = SQLDatabase.from_uri(DATABASE_URL)
 
 sql_item_reader = create_sql_agent(
     llm, db=db, verbose=True, agent_type="tool-calling",
-    handle_parsing_errors=True, prefix_prompt=load_prompt("sql_item_reader")
+    handle_parsing_errors=True, prefix_prompt=load_prompt("sql_item_reader"),
+    extra_tools=[
+
+        list_all_items_tool,
+        find_item_by_name_tool,
+    ]
 )
 
 

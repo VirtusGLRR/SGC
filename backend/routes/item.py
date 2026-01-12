@@ -32,6 +32,10 @@ def update(id: int, request: ItemRequest, db: Session = Depends(get_db)):
 def get_items_summary(db: Session = Depends(get_db)):
     return ItemController.get_inventory_summary(db)
 
+@item_routes.get("/items/total-value/{id}")
+def get_total_item_value(id: int, db: Session = Depends(get_db)):
+    return ItemController.get_total_item_value_by_id(id, db)
+
 @item_routes.get("/items/low-stock/{threshold}")
 def get_low_stock_items(threshold: int = 5, db: Session = Depends(get_db)):
     return ItemController.get_low_stock_items(threshold, db)

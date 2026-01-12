@@ -96,6 +96,23 @@ class ItemController:
         )
 
     @staticmethod
+    def get_total_item_value_by_id(id: int, db: Session = Depends(get_db)):
+        """Retorna o valor total do estoque de um item específico"""
+        if not ItemRepository.exists_by_id(db, id):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Item não encontrado"
+            )
+        try:
+            total_value = ItemRepository.find_total_item_value_by_id(id, db)
+
+            return {"total_value": total_value}
+        
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            )
+
+    @staticmethod
     def get_total_inventory_value(db: Session = Depends(get_db)):
         """Retorna o valor total do estoque atual"""
         try:

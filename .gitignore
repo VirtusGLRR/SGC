@@ -7,4 +7,8 @@ __pycache__/
 **sqlite.db
 **checkpoints.db
 **test.db
+**/context
+**checkpoints.db-shm
+**checkpoints.db-wal
+**.vite/
 

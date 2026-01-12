@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, desc
+from sqlalchemy import func, and_, desc, extract
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -125,7 +125,8 @@ class TransactionRepository:
         """Retorna os itens com mais transações com conversão de unidades"""
         query = db.query(Transaction).join(Item, Transaction.item_id == Item.id)
 
-        if order_type:
+        # Tratar 'null' como None e filtrar apenas se order_type for válido
+        if order_type and order_type.lower() not in ['null', 'none', 'all']:
             query = query.filter(Transaction.order_type == order_type)
 
         transactions = query.all()
@@ -283,3 +284,84 @@ class TransactionRepository:
             }
             for r in results
         ]
+
+    @staticmethod
+    def find_monthly_expenses(
+            db: Session,
+            months: int = 6
+    ) -> list[dict]:
+        """
+        Retorna gastos mensais (apenas transações de entrada/compra) dos últimos N meses
+        com valor total gasto por mês e comparação entre meses
+        """
+
+        # Data de início (N meses atrás)
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=months * 30)
+
+        # Buscar transações de entrada no período
+        transactions = db.query(Transaction).join(
+            Item, Transaction.item_id == Item.id
+        ).filter(
+            and_(
+                Transaction.order_type.in_(['entrada', 'compra']),
+                Transaction.create_at >= start_date.date(),
+                Transaction.create_at <= end_date.date()
+            )
+        ).all()
+
+        # Agrupar por mês e calcular valores com conversão de unidades
+        monthly_totals = {}
+
+        for trans in transactions:
+            item = trans.item
+            year = trans.create_at.year
+            month = trans.create_at.month
+            key = f"{year}-{month:02d}"
+
+            if key not in monthly_totals:
+                monthly_totals[key] = {
+                    "year": year,
+                    "month": month,
+                    "month_label": key,
+                    "transaction_count": 0,
+                    "total_spent": 0.0
+                }
+
+            # Calcular valor usando conversão de unidades
+            price_to_use = trans.price if trans.price is not None else 0.0
+
+            if price_to_use > 0:
+                trans_value = calculate_item_total_value(
+                    trans.amount,
+                    price_to_use,
+                    item.measure_unity,
+                    item.price_unit
+                )
+                monthly_totals[key]["total_spent"] += float(trans_value)
+
+            monthly_totals[key]["transaction_count"] += 1
+
+        # Converter para lista ordenada
+        monthly_data = sorted(monthly_totals.values(), key=lambda x: (x["year"], x["month"]))
+
+        # Calcular comparação com mês anterior
+        for i in range(len(monthly_data)):
+            if i > 0:
+                current = monthly_data[i]["total_spent"]
+                previous = monthly_data[i-1]["total_spent"]
+
+                if previous > 0:
+                    difference = current - previous
+                    percentage = ((current - previous) / previous) * 100
+                    monthly_data[i]["difference_from_previous"] = float(difference)
+                    monthly_data[i]["percentage_change"] = float(percentage)
+                else:
+                    monthly_data[i]["difference_from_previous"] = float(current)
+                    monthly_data[i]["percentage_change"] = 100.0 if current > 0 else 0.0
+            else:
+                monthly_data[i]["difference_from_previous"] = 0.0
+                monthly_data[i]["percentage_change"] = 0.0
+
+        return monthly_data
+

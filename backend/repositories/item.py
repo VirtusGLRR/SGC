@@ -30,7 +30,11 @@ class ItemRepository:
     @staticmethod
     def find_by_name(db: Session, name: str) -> list[type[Item]]:
         """Recupera itens pelo seu nome."""
-        return db.query(Item).filter(Item.name == name).all()
+        return (
+            db.query(Item)
+            .filter(Item.name.ilike(f"%{name}%"))
+            .all()
+        )
 
     @staticmethod
     def exists_by_id(db: Session, id: int) -> bool:
@@ -79,6 +83,20 @@ class ItemRepository:
                 Item.expiration_date < today
             )
         ).all()
+
+    @staticmethod
+    def find_total_item_value_by_id(id: int, db: Session) -> Decimal:
+        """Retorna o valor total do estoque de um item específico, considerando as unidades"""
+        item = db.query(Item).filter(Item.id == id).first()
+        
+        total = calculate_item_total_value(
+                item.amount,
+                item.price,
+                item.measure_unity,
+                item.price_unit
+            )
+        
+        return total
 
     @staticmethod
     def find_total_inventory_value(db: Session) -> Decimal:

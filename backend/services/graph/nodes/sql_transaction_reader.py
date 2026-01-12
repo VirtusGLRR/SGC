@@ -24,5 +24,5 @@ def sql_transaction_reader_node(state : AgentState):
         sql_response = str(response)
 
     return {
-        'sql_response': sql_response
+        'sql_response': [sql_response]
     }

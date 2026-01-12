@@ -46,7 +46,7 @@ def audio_extractor(audio_b64):
             {
                 "type": "audio",
                 "base64": audio_b64,
-                "mime_type": "audio/mpeg",
+                "mime_type": "audio/webm",  #  Corrigido de mpeg para webm
             },
         ]
     )
