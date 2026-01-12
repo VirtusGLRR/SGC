@@ -1,0 +1,241 @@
+.transactions-list {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+.transactions-list:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.transactions-list__title {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.transactions-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.transactions-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.transactions-list__item--clickable {
+  cursor: pointer;
+}
+
+.transactions-list__item--clickable:hover {
+  border-color: #2196f3;
+  background: #f8f9fa;
+  transform: translateX(4px);
+}
+
+.transactions-list__item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.transactions-list__type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.transactions-list__type-icon--entrada {
+  background: #e8f5e9;
+}
+
+.transactions-list__type-icon--saida {
+  background: #ffebee;
+}
+
+.transactions-list__item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.transactions-list__item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transactions-list__item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.transactions-list__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.transactions-list__badge--entrada {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.transactions-list__badge--saida {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.transactions-list__item-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.transactions-list__item-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.transactions-list__item-values {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.transactions-list__item-quantity {
+  font-size: 12px;
+  color: #999;
+}
+
+.transactions-list__item-value {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.transactions-list__item-value--entrada {
+  color: #2e7d32;
+}
+
+.transactions-list__item-value--saida {
+  color: #c62828;
+}
+
+.transactions-list__item-arrow {
+  font-size: 24px;
+  color: #ccc;
+  transition: color 0.2s ease;
+}
+
+.transactions-list__item--clickable:hover .transactions-list__item-arrow {
+  color: #2196f3;
+}
+
+/* Loading state */
+.transactions-list__loading {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.transactions-list__skeleton-item {
+  height: 64px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Empty state */
+.transactions-list__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 12px;
+}
+
+.transactions-list__empty-icon {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+.transactions-list__empty-text {
+  margin: 0;
+  color: #999;
+  font-size: 14px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .transactions-list {
+    padding: 16px;
+  }
+
+  .transactions-list__title {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .transactions-list__item {
+    padding: 10px;
+  }
+
+  .transactions-list__type-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .transactions-list__item-name {
+    font-size: 13px;
+  }
+
+  .transactions-list__item-value {
+    font-size: 13px;
+  }
+
+  .transactions-list__item-arrow {
+    display: none;
+  }
+}
+

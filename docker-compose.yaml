@@ -33,6 +33,21 @@ services:
     networks:
       - sgc_network
 
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:${BACKEND_PORT}
+    depends_on:
+      - backend
+    networks:
+      - sgc_network
+
 volumes:
   pgdata:
 

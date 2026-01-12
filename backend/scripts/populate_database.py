@@ -566,6 +566,110 @@ def populate_database():
                 amount=395,
                 price=None
             ),
+
+            # ==========================================
+            # TRANSAÇÕES DE DEZEMBRO 2025
+            # ==========================================
+            Transaction(
+                item_id=items[0].id,  # banana
+                order_type="entrada",
+                description="Compra mensal dezembro",
+                create_at=datetime(2025, 12, 5).date(),
+                amount=30,
+                price=0.45
+            ),
+            Transaction(
+                item_id=items[1].id,  # doce de leite
+                order_type="entrada",
+                description="Compra mensal dezembro",
+                create_at=datetime(2025, 12, 8).date(),
+                amount=2000,
+                price=14.50
+            ),
+            Transaction(
+                item_id=items[3].id,  # manteiga
+                order_type="entrada",
+                description="Compra mensal dezembro",
+                create_at=datetime(2025, 12, 10).date(),
+                amount=800,
+                price=38.00
+            ),
+            Transaction(
+                item_id=items[7].id,  # leite
+                order_type="entrada",
+                description="Compra mensal dezembro",
+                create_at=datetime(2025, 12, 12).date(),
+                amount=5000,
+                price=4.80
+            ),
+            Transaction(
+                item_id=items[0].id,  # banana
+                order_type="saída",
+                description="Produção dezembro - tortas",
+                create_at=datetime(2025, 12, 15).date(),
+                amount=15,
+                price=None
+            ),
+            Transaction(
+                item_id=items[1].id,  # doce de leite
+                order_type="saída",
+                description="Produção dezembro - doces",
+                create_at=datetime(2025, 12, 18).date(),
+                amount=500,
+                price=None
+            ),
+
+            # ==========================================
+            # TRANSAÇÕES DE NOVEMBRO 2025
+            # ==========================================
+            Transaction(
+                item_id=items[0].id,  # banana
+                order_type="entrada",
+                description="Compra mensal novembro",
+                create_at=datetime(2025, 11, 3).date(),
+                amount=25,
+                price=0.55
+            ),
+            Transaction(
+                item_id=items[1].id,  # doce de leite
+                order_type="entrada",
+                description="Compra mensal novembro",
+                create_at=datetime(2025, 11, 5).date(),
+                amount=1500,
+                price=16.00
+            ),
+            Transaction(
+                item_id=items[3].id,  # manteiga
+                order_type="entrada",
+                description="Compra mensal novembro",
+                create_at=datetime(2025, 11, 7).date(),
+                amount=600,
+                price=42.00
+            ),
+            Transaction(
+                item_id=items[7].id,  # leite
+                order_type="entrada",
+                description="Compra mensal novembro",
+                create_at=datetime(2025, 11, 10).date(),
+                amount=4000,
+                price=5.20
+            ),
+            Transaction(
+                item_id=items[0].id,  # banana
+                order_type="saída",
+                description="Produção novembro - sobremesas",
+                create_at=datetime(2025, 11, 20).date(),
+                amount=12,
+                price=None
+            ),
+            Transaction(
+                item_id=items[1].id,  # doce de leite
+                order_type="saída",
+                description="Produção novembro - brigadeiros",
+                create_at=datetime(2025, 11, 22).date(),
+                amount=400,
+                price=None
+            ),
         ]
 
         db.add_all(transactions)

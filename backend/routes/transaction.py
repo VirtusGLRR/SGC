@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.orm import Session
 from controllers import TransactionController
 from schemas import TransactionResponse, TransactionRequest
@@ -54,3 +54,11 @@ def get_consumption_rate(days: int = 30, db: Session = Depends(get_db)):
 @transaction_routes.get("/transactions/price-analysis")
 def get_price_analysis(db: Session = Depends(get_db)):
     return TransactionController.get_average_transaction_value_by_item(db=db)
+
+@transaction_routes.get("/transactions/monthly-expenses")
+def get_monthly_expenses(
+    months: int = Query(default=6, description="Número de meses para análise"),
+    db: Session = Depends(get_db)
+):
+    """Retorna gastos mensais (entradas) dos últimos N meses"""
+    return TransactionController.get_monthly_expenses(months=months, db=db)

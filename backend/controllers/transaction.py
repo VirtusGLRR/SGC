@@ -7,7 +7,6 @@ from models import Transaction
 from repositories import TransactionRepository, ItemRepository
 from schemas import TransactionResponse, TransactionRequest
 from datetime import datetime
-from fastapi import Query
 
 class TransactionController:
     @staticmethod
@@ -19,9 +18,15 @@ class TransactionController:
 
     @staticmethod
     def find_all(db: Session = Depends(get_db)):
-        """Retorna todas as transações cadastradas."""
+        """Retorna todas as transações cadastradas com nome do item."""
         transactions = TransactionRepository.find_all(db)
-        return [TransactionResponse.model_validate(transaction) for transaction in transactions]
+        result = []
+        for transaction in transactions:
+            trans_dict = TransactionResponse.model_validate(transaction).model_dump()
+            item = ItemRepository.find_by_id(db, transaction.item_id)
+            trans_dict['item_name'] = item.name if item else 'Item não encontrado'
+            result.append(trans_dict)
+        return result
 
     @staticmethod
     def find_by_id(id: int, db: Session = Depends(get_db)):
@@ -35,9 +40,17 @@ class TransactionController:
 
     @staticmethod
     def find_by_item_id(item_id: int, db: Session = Depends(get_db)):
-        """Retorna todas as transações associadas a um item específico."""
+        """Retorna todas as transações associadas a um item específico com nome do item."""
         transactions = TransactionRepository.find_by_item_id(db, item_id)
-        return [TransactionResponse.model_validate(transaction) for transaction in transactions]
+        result = []
+        item = ItemRepository.find_by_id(db, item_id)
+        item_name = item.name if item else 'Item não encontrado'
+
+        for transaction in transactions:
+            trans_dict = TransactionResponse.model_validate(transaction).model_dump()
+            trans_dict['item_name'] = item_name
+            result.append(trans_dict)
+        return result
 
     @staticmethod
     def delete_by_id(id: int, db: Session = Depends(get_db)):
@@ -116,7 +129,7 @@ class TransactionController:
     
     @staticmethod
     def get_daily_transactions(
-        days: int = Query(30, gt=0, description="Número de dias para analisar (padrão: 30)"),
+        days: int = 30,
         db: Session = Depends(get_db)
     ) -> List[Dict[str, Any]]:
         """
@@ -147,7 +160,7 @@ class TransactionController:
     
     @staticmethod
     def get_consumption_rate_by_item(
-        days: int = Query(30, gt=0, description="Dias para análise (deve ser maior que 0)"),
+        days: int = 30,
         db: Session = Depends(get_db)
     ) -> List[Dict[str, Any]]:
         """
@@ -159,6 +172,23 @@ class TransactionController:
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                detail=str(e)
+            )
+
+    @staticmethod
+    def get_monthly_expenses(
+        months: int = 6,
+        db: Session = Depends(get_db)
+    ) -> List[Dict[str, Any]]:
+        """
+        Retorna gastos mensais (apenas entradas) dos últimos N meses
+        com comparação entre meses
+        """
+        try:
+            return TransactionRepository.find_monthly_expenses(db, months)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e)
             )
 

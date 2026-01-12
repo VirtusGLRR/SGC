@@ -1,0 +1,125 @@
+.statistics-chart {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+.statistics-chart:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.statistics-chart__title {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Loading State */
+.statistics-chart--loading {
+  min-height: 300px;
+}
+
+.statistics-chart__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.statistics-chart__skeleton-line {
+  height: 60px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Empty State */
+.statistics-chart--empty {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.statistics-chart__empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+}
+
+.statistics-chart__empty-icon {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+.statistics-chart__empty-text {
+  margin: 0;
+  color: #999;
+  font-size: 14px;
+}
+
+/* Customização dos tooltips do Recharts */
+.recharts-tooltip-wrapper {
+  z-index: 10;
+}
+
+.recharts-default-tooltip {
+  background-color: white !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.recharts-tooltip-label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.recharts-tooltip-item {
+  padding: 2px 0 !important;
+}
+
+/* Legenda customizada */
+.recharts-legend-wrapper {
+  padding-top: 16px !important;
+}
+
+.recharts-legend-item-text {
+  color: #666 !important;
+  font-size: 13px !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .statistics-chart {
+    padding: 16px;
+  }
+
+  .statistics-chart__title {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .recharts-legend-wrapper {
+    font-size: 12px !important;
+  }
+}
+
