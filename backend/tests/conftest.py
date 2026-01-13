@@ -42,6 +42,7 @@ def populated_db_session(db_session):
             amount=12,
             description="bananas nanicas maduras",
             price=0.50,
+            price_unit="unidade",
             expiration_date=datetime.now().date() + timedelta(days=5)
         ),
         Item(
@@ -50,6 +51,7 @@ def populated_db_session(db_session):
             amount=800,
             description="doce de leite cremoso",
             price=15.00,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=180)
         ),
         Item(
@@ -57,7 +59,8 @@ def populated_db_session(db_session):
             measure_unity="grama",
             amount=400,
             description="biscoito tipo maisena triturado",
-            price=5.00,
+            price=10.00,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=90)
         ),
         Item(
@@ -65,7 +68,8 @@ def populated_db_session(db_session):
             measure_unity="grama",
             amount=200,
             description="manteiga sem sal",
-            price=8.00,
+            price=40.00,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=30)
         ),
         Item(
@@ -74,6 +78,7 @@ def populated_db_session(db_session):
             amount=1000,
             description="creme de leite fresco",
             price=6.00,
+            price_unit="litro",
             expiration_date=datetime.now().date() + timedelta(days=15)
         ),
         Item(
@@ -82,6 +87,7 @@ def populated_db_session(db_session):
             amount=2000,
             description="açúcar refinado",
             price=4.50,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=365)
         ),
         Item(
@@ -90,6 +96,7 @@ def populated_db_session(db_session):
             amount=800,
             description="leite condensado",
             price=7.00,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=180)
         ),
         Item(
@@ -98,6 +105,7 @@ def populated_db_session(db_session):
             amount=2000,
             description="leite integral",
             price=5.00,
+            price_unit="litro",
             expiration_date=datetime.now().date() + timedelta(days=7)
         ),
         Item(
@@ -105,7 +113,8 @@ def populated_db_session(db_session):
             measure_unity="grama",
             amount=500,
             description="amido de milho (maisena)",
-            price=4.00,
+            price=8.00,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=365)
         ),
         Item(
@@ -114,6 +123,7 @@ def populated_db_session(db_session):
             amount=12,
             description="gemas de ovos",
             price=0.60,
+            price_unit="unidade",
             expiration_date=datetime.now().date() + timedelta(days=7)
         ),
         Item(
@@ -121,7 +131,8 @@ def populated_db_session(db_session):
             measure_unity="grama",
             amount=300,
             description="biscoito tipo champanhe",
-            price=6.00,
+            price=20.00,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=90)
         ),
         Item(
@@ -129,7 +140,8 @@ def populated_db_session(db_session):
             measure_unity="grama",
             amount=400,
             description="chocolate em pó ou cacau",
-            price=8.00,
+            price=40.00,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=365)
         ),
         Item(
@@ -137,7 +149,8 @@ def populated_db_session(db_session):
             measure_unity="grama",
             amount=100,
             description="canela em pó",
-            price=3.50,
+            price=35.00,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=365)
         ),
         Item(
@@ -145,7 +158,8 @@ def populated_db_session(db_session):
             measure_unity="grama",
             amount=300,
             description="nozes",
-            price=15.00,
+            price=50.00,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=90)
         ),
         Item(
@@ -154,6 +168,7 @@ def populated_db_session(db_session):
             amount=1000,
             description="farinha de trigo",
             price=5.00,
+            price_unit="kg",
             expiration_date=datetime.now().date() + timedelta(days=365)
         ),
         Item(
@@ -161,7 +176,8 @@ def populated_db_session(db_session):
             measure_unity="mililitro",
             amount=50,
             description="extrato de baunilha",
-            price=12.00,
+            price=240.00,
+            price_unit="litro",
             expiration_date=datetime.now().date() + timedelta(days=365)
         ),
         Item(
@@ -170,6 +186,7 @@ def populated_db_session(db_session):
             amount=5,
             description="limões",
             price=0.80,
+            price_unit="unidade",
             expiration_date=datetime.now().date() + timedelta(days=7)
         ),
     ]

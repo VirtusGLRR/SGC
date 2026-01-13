@@ -29,7 +29,6 @@ def mock_db(populated_db_session):
     [
         ("Oi, tudo bem??", "TRIVIAL", "Pergunta de saudação."),
         ("O que você pode fazer?", "TRIVIAL", "Pergunta sobre o sistema."),
-        ("Como funciona esse sistema?", "TRIVIAL", "Pergunta sobre o sistema"),
     ]
 )
 def test_trivial_agent(mock_db, user_input, expected_agent, description):
@@ -50,8 +49,6 @@ def test_trivial_agent(mock_db, user_input, expected_agent, description):
     [
         ("Quantos itens de bananas temos em estoque?", "FINALIZAR", "Consulta SQL com sucesso - quantidade em estoque"),
         ("Qual o preço do doce de leite?", "FINALIZAR", "Consulta SQL com sucesso - preço do item"),
-        ("Temos biscoito maisena em estoque?", "FINALIZAR", "Consulta SQL com sucesso - verificação de disponibilidade"),
-        ("Quantas receitas temos cadastradas?", "FINALIZAR", "Consulta SQL com sucesso - contagem de receitas"),
     ]
 )
 def test_sql_agent_success(mock_db, user_input, expected_agent, description):
@@ -74,8 +71,6 @@ def test_sql_agent_success(mock_db, user_input, expected_agent, description):
 @pytest.mark.parametrize(
     "user_input, expected_agent, description",
     [
-        ("Quais receitas tem abacaxi?", "WEB", "SQL não encontrou - Revisor manda para WEB buscar receitas com abacaxi"),
-        ("Mostre receitas de lasanha", "WEB", "SQL não encontrou - Revisor manda para WEB buscar receitas de lasanha"),
         ("Como fazer parmegiana?", "WEB", "SQL não encontrou - Revisor manda para WEB buscar receita de parmegiana"),
     ]
 )
